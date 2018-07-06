@@ -8,6 +8,7 @@ import Html.Keyed as Keyed
 import Json.Encode
 import MeenyLatex.Differ exposing (EditRecord)
 import MeenyLatex.Driver
+import Debounce exposing(Debounce)
 
 
 main =
@@ -19,6 +20,7 @@ main =
 type alias Model a =
     { sourceText : String
     , renderedText : a
+    , debounce : Debounce a 
     , counter : Int
     }
 
@@ -26,7 +28,15 @@ type Msg
     = Clear
     | Render
     | GetContent String
+    | DebounceMsg Debounce.Msg
 
+-- This defines how the debouncer should work.
+-- Choose the strategy for your use case.
+debounceConfig : Debounce.Config Msg
+debounceConfig =
+  { strategy = Debounce.later 250
+  , transform = DebounceMsg
+  }
 
 type alias Flags =
     {}
@@ -57,6 +67,7 @@ init flags =
         model =
             { sourceText = initialText
             , renderedText = render initialText
+            , debounce = Debounce.init
             , counter = 0
             }
     
@@ -88,10 +99,31 @@ update msg model =
 
 
         GetContent str ->
-            ( { model | sourceText = str
-                       , renderedText = render str
-                       , counter = model.counter + 1 }
-            , Cmd.none )
+            let
+                -- Push your values here.
+                (debounce, cmd) =
+                   Debounce.push debounceConfig str model.debounce
+            in
+                ({ model
+                    | sourceText = str
+                    , debounce = debounce
+                    }
+                    , cmd)
+                    
+        DebounceMsg msg_ ->
+            let
+                (debounce, cmd) =
+                    Debounce.update
+                        debounceConfig
+                        (Debounce.takeLast save)
+                        msg_
+                        model.debounce
+            in
+                ({ model | debounce = debounce }, cmd)   
+            -- ( { model | sourceText = str
+            --            , renderedText = render str
+            --            , counter = model.counter + 1 }
+            -- , Cmd.none )
 
 
 -- VIEW FUNCTIONS 
