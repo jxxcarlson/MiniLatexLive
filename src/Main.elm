@@ -9,6 +9,7 @@ import Json.Encode
 import MeenyLatex.Differ exposing (EditRecord)
 import MeenyLatex.Driver
 import Debounce exposing(Debounce)
+import Task
 
 
 main =
@@ -20,13 +21,13 @@ main =
 type alias Model a =
     { sourceText : String
     , renderedText : a
-    , debounce : Debounce a 
+    , debounce : Debounce String 
     , counter : Int
     }
 
 type Msg
     = Clear
-    | Render
+    | Render String
     | GetContent String
     | DebounceMsg Debounce.Msg
 
@@ -41,12 +42,6 @@ debounceConfig =
 type alias Flags =
     {}
 
-render : String -> Html msg 
-render sourceText =
-  let 
-    macroDefinitions = ""
-  in 
-    MeenyLatex.Driver.render macroDefinitions sourceText
 
 -- MAIN FUNCTIONS
 
@@ -83,13 +78,13 @@ subscriptions model =
 update : Msg -> Model (Html msg) -> ( Model (Html msg), Cmd Msg )
 update msg model =
     case msg of
-        Render ->
-            ( { model
-                | renderedText = render model.sourceText,
-                  counter = model.counter + 1
-              }
-            , Cmd.none
-            )
+        -- Render ->
+        --     ( { model
+        --         | renderedText = render model.sourceText,
+        --           counter = model.counter + 1
+        --       }
+        --     , Cmd.none
+        --     )
 
         Clear ->
             ({ model | sourceText = ""
@@ -115,15 +110,32 @@ update msg model =
                 (debounce, cmd) =
                     Debounce.update
                         debounceConfig
-                        (Debounce.takeLast save)
+                        (Debounce.takeLast render_)
                         msg_
                         model.debounce
             in
-                ({ model | debounce = debounce }, cmd)   
+                ({ model | debounce = debounce }, cmd)  
+
+
+        Render str ->
+          ({ model | renderedText = render str, counter = model.counter + 1}, Cmd.none)        
+
             -- ( { model | sourceText = str
             --            , renderedText = render str
             --            , counter = model.counter + 1 }
             -- , Cmd.none )
+
+
+render_ : String -> Cmd Msg
+render_ str =
+    Task.perform Render (Task.succeed str)
+
+render : String -> Html msg 
+render sourceText =
+  let 
+    macroDefinitions = ""
+  in 
+    MeenyLatex.Driver.render macroDefinitions sourceText
 
 
 -- VIEW FUNCTIONS 
