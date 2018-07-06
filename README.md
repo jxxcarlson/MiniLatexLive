@@ -8,7 +8,7 @@ fast render in this app.  Coming
 soon!
 
 See the demo at 
-[MiniLatex Live Edit](https://jxxcarlson.github.io/app/miniLatexLiveEdit/index.html)
+[MiniLatex Live Edit](https://jxxcarlson.github.io/app/miniLatexLive/index.html)
 
 Compile with
 
