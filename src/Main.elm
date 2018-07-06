@@ -40,10 +40,20 @@ render sourceText =
 
 -- MAIN FUNCTIONS
 
+initialText = 
+    """
+\\strong{Example}
+
+$$\\int_0^1 x^n dx = \\frac{1}{n+1}$$
+
+
+\\italic{This formula is now taught in High School.}
+"""
+
 init : Flags -> ( Model (Html msg), Cmd Msg )
 init flags =
     let
-        initialText = "$$\\int_0^1 x^n dx = \\frac{1}{n+1}$$"
+        
         model =
             { sourceText = initialText
             , renderedText = render initialText
@@ -98,7 +108,8 @@ view model =
 
 display model = 
   div [ ] [
-    label "Type LaTeX below. It will be rendered in real time."
+      h1 [style "margin-left" "20px"] [text "MiniLatex Live"]
+    , label "Type LaTeX below. It will be rendered in real time."
     , editor model
     , renderedSource model
   ]
@@ -125,7 +136,7 @@ outerStyle =
   , style "background-color" "#ddd"
   , style "padding" "20px"
   , style "width" "930px"
-  , style "height" "340px"]
+  , style "height" "410px"]
 
 editorTextStyle =
     textStyle "400px" "250px" "#fff"
