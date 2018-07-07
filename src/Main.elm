@@ -35,6 +35,8 @@ type Msg
     | DebounceMsg Debounce.Msg
     | GenerateSeed
     | NewSeed Int
+    | FullRender
+    | RestoreText
 
 -- This defines how the debouncer should work.
 -- Choose the strategy for your use case.
@@ -49,16 +51,6 @@ type alias Flags =
 
 
 -- MAIN FUNCTIONS
-
-initialText = 
-    """
-\\strong{Example}
-
-$$\\int_0^1 x^n dx = \\frac{1}{n+1}$$
-
-
-\\italic{This formula is now taught in High School.}
-"""
 
 init : Flags -> ( Model (Html msg), Cmd Msg )
 init flags =
@@ -88,11 +80,6 @@ update : Msg -> Model (Html msg) -> ( Model (Html msg), Cmd Msg )
 update msg model =
     case msg of
 
-        Clear ->
-            ({ model | sourceText = ""
-              , renderedText = render ""
-              , counter = model.counter + 1
-            }, Cmd.none)
 
 
         GetContent str ->
@@ -120,8 +107,10 @@ update msg model =
 
         Render str ->
           let 
-            newEditRecord =
-                    MeenyLatex.Driver.update model.seed model.editRecord str
+            n = String.fromInt model.counter
+
+            newEditRecord = 
+                    (MeenyLatex.Driver.update model.seed  model.editRecord str)
           in
             ({ model | 
                 editRecord = newEditRecord
@@ -134,12 +123,47 @@ update msg model =
             ( model, Random.generate NewSeed (Random.int 1 10000) )
 
         NewSeed newSeed ->
-            ( { model | seed = newSeed }, Cmd.none )        
+            ( { model | seed = newSeed }, Cmd.none )
+
+        Clear -> 
+           let 
+                editRecord =
+                    MeenyLatex.Driver.setup 0 ""  
+           in
+             ( { model | 
+                sourceText = ""
+                , editRecord = editRecord
+                , renderedText = renderFromEditRecord model.counter editRecord 
+                , counter = model.counter + 1
+                }
+             , Cmd.none)
+
+
+        FullRender ->    
+          let 
+            editRecord =
+              MeenyLatex.Driver.setup model.seed  model.sourceText 
+          in 
+            ( { model | counter = model.counter + 1
+              , editRecord = editRecord
+              , renderedText = renderFromEditRecord model.counter editRecord }
+            , Cmd.none)
+
+        RestoreText ->    
+          let 
+            editRecord =
+              MeenyLatex.Driver.setup model.seed initialText 
+          in 
+            ( { model | counter = model.counter + 1
+              , editRecord = editRecord
+              , sourceText = initialText
+              , renderedText = renderFromEditRecord model.counter editRecord }
+            , Cmd.none)
+
 
 renderFromEditRecord : Int -> EditRecord (Html msg)-> Html msg
 renderFromEditRecord counter editRecord =
     MeenyLatex.Driver.getRenderedText "" editRecord
-        -- |> List.map (\x -> Keyed.node "div" [ HA.style "margin-bottom" "0.65em" ] [ ((String.fromInt counter), x) ])
         |> List.map (\x -> Html.div [ HA.style "margin-bottom" "0.65em" ] [  x ])
         |> Html.div []
 
@@ -171,40 +195,82 @@ view model =
 display model = 
   div [ ] [
       h1 [style "margin-left" "20px"] [text "MiniLatex Live"]
-    , label "Type LaTeX below. It will be rendered in real time."
+    , p [style "margin-left" "20px", style "font-style" "italic"] [text "This app is a demo of the ongoing MiniLatex research project."]
+    , label "Edit or write new LaTeX below. It will be rendered in real time."
     , editor model
     , renderedSource model
+    , p [style "clear" "left", style "margin-left" "20px"] [clearButton 60, restoreTextButton 80, fullRenderButton 100 ]
+    
   ]
+
+
 
 label text_ =
     p labelStyle [ text text_ ]
-
-
+  
+  
 editor model =
-   textarea (editorTextStyle ++ [ onInput GetContent, value model.sourceText ] ) 
-      [  ]
+  textarea (editorTextStyle ++ [ onInput GetContent, value model.sourceText ] )  [  ]
 
 
 renderedSource : Model (Html msg) -> Html msg
 renderedSource model =
-        Keyed.node "div" renderedSourceStyle
-           [((String.fromInt model.counter), model.renderedText)]
+        Html.div renderedSourceStyle
+           [ model.renderedText]
 
 
+clearButton width =
+    button ([ onClick Clear ] ++ buttonStyle colorBlue width) [ text "Clear" ]
+
+fullRenderButton width =
+    button ([ onClick FullRender ] ++ buttonStyle colorBlue width) [ text "Full Render" ]
+
+restoreTextButton width =
+    button ([ onClick RestoreText ] ++ buttonStyle colorBlue width) [ text "Restore" ]
+
+
+colorBlue =
+    "rgb(100,100,200)"
+
+
+colorLight =
+    "#88a"
+
+
+colorDark =
+    "#444"
+
+
+buttonStyle : String -> Int -> List (Html.Attribute msg)
+buttonStyle color width =
+    let
+        realWidth =
+            width + 0 |> String.fromInt |> \x -> x ++ "px"
+    in
+        [ style "backgroundColor" color
+        , style "color" "white"
+        , style "width" realWidth
+        , style "height" "25px"
+        , style "margin-top" "20px"
+        , style "margin-right" "12px"
+        , style "font-size" "9pt"
+        , style "text-align" "center"
+        , style "border" "none"
+        ]
 -- STYLE FUNCTIONS
 
 outerStyle = 
   [style "margin-top" "20px"
-  , style "background-color" "#ddd"
+  , style "background-color" "#e1e6e8"
   , style "padding" "20px"
   , style "width" "930px"
-  , style "height" "410px"]
+  , style "height" "670px"]
 
 editorTextStyle =
-    textStyle "400px" "250px" "#fff"
+    textStyle "400px" "450px" "#fff"
 
 renderedSourceStyle =
-    textStyle "400px" "250px" "#fff"
+    textStyle "400px" "450px" "#fff"
 
 
 textStyle width height color =
@@ -225,6 +291,75 @@ labelStyle =
     ]
 
 
+-- TEXT
 
+initialText = 
+    """
+
+\\tableofcontents
+
+\\section{Integrals}
+
+\\italic{Try editing formula \\eqref{integral:xn} or \\eqref{integral:exp} below.}
+
+The most basic integral:
+
+\\begin{equation}
+\\label{integral:xn}
+\\int_0^1 x^n dx = \\frac{1}{n+1}
+\\end{equation}
+
+An improper integral:
+
+\\begin{equation}
+\\label{integral:exp}
+\\int_0^\\infty e^{-x} dx = 1
+\\end{equation}
+
+\\section{Theorems}
+
+\\begin{theorem} 
+There are infinitley many prime numbers.
+\\end{theorem}
+
+\\begin{theorem} 
+There are infinitley many prime numbers 
+$p$ such that $p \\equiv 1\\ mod\\ 4$.
+\\end{theorem}
+
+\\section{Images}
+
+\\image{http://psurl.s3.amazonaws.com/images/jc/beats-eca1.png}{Two-frequency beats}{width: 350, float: right}
+
+\\section{Notes}
+
+MiniLatex is still a research project, but is getting closer to its first release. Please
+bear in mind that there are some rough edges. For example, the links in the
+table of contents don't work.  Lots to do! 
+
+I will try to extend the  coverage of LaTeX as time and energy permit.  
+Please send suggestions in this regard as well
+as bug reports and comments in general to jxxcarlson at gmail.
+
+\\section{Technology}
+
+MiniLatex is written in \\href{http://elm-lang.org}{Elm}, a statically typed functional
+programming language with an excellent 
+\\href{http://package.elm-lang.org/packages/elm-tools/parser/latest}{parser combinator library}.
+For an overview of the design of MiniLatex, see
+\\href{https://hackernoon.com/towards-latex-in-the-browser-2ff4d94a0c08}{Towards Latex in the Browser}.
+Briefly, \\href{https://www.mathjax.org/}{MathJax} is used inside dollar signs, and Elm is used outside.
+
+Code for MiniLatex is open source.  See the latest release at
+\\href{http://package.elm-lang.org/packages/jxxcarlson/minilatex/latest}{package.elm-lang.org},
+and note the link to the GitHub repository.
+MiniLatex Live uses an unreleased experimental version of this package.  Coming soon!
+
+For a more thoroughgoing use of MiniLatex, see \\href{http://www.knode.io}{www.knode.io} --
+a site for class and lecture notes, etc.
+
+\\bigskip
+
+"""
 
 
