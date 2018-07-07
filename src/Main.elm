@@ -78,18 +78,11 @@ subscriptions model =
 update : Msg -> Model (Html msg) -> ( Model (Html msg), Cmd Msg )
 update msg model =
     case msg of
-        -- Render ->
-        --     ( { model
-        --         | renderedText = render model.sourceText,
-        --           counter = model.counter + 1
-        --       }
-        --     , Cmd.none
-        --     )
 
         Clear ->
             ({ model | sourceText = ""
               , renderedText = render ""
-              , counter = model.counter + 1
+              , counter = model.counter + 0
             }, Cmd.none)
 
 
@@ -118,12 +111,9 @@ update msg model =
 
 
         Render str ->
-          ({ model | renderedText = render str, counter = model.counter + 1}, Cmd.none)        
+          ({ model | renderedText = render str, counter = model.counter + 0}, Cmd.none)        
 
-            -- ( { model | sourceText = str
-            --            , renderedText = render str
-            --            , counter = model.counter + 1 }
-            -- , Cmd.none )
+
 
 
 render_ : String -> Cmd Msg
