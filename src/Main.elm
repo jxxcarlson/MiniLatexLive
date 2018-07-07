@@ -116,7 +116,7 @@ update msg model =
         Render str ->
           let 
             newEditRecord =
-                    MeenyLatex.Driver.update 0 model.editRecord (Debug.log "str" str)
+                    MeenyLatex.Driver.update 0 model.editRecord str
           in
             ({ model | 
                 editRecord = newEditRecord
