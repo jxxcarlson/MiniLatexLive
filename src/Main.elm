@@ -10,6 +10,7 @@ import MeenyLatex.Differ exposing (EditRecord)
 import MeenyLatex.Driver
 import Debounce exposing(Debounce)
 import Task
+import Random
 
 
 main =
@@ -24,6 +25,7 @@ type alias Model a =
     , editRecord : EditRecord a
     , debounce : Debounce String 
     , counter : Int
+    , seed : Int
     }
 
 type Msg
@@ -31,6 +33,8 @@ type Msg
     | Render String
     | GetContent String
     | DebounceMsg Debounce.Msg
+    | GenerateSeed
+    | NewSeed Int
 
 -- This defines how the debouncer should work.
 -- Choose the strategy for your use case.
@@ -68,6 +72,7 @@ init flags =
             , editRecord = editRecord
             , debounce = Debounce.init
             , counter = 0
+            , seed = 0
             }
     
     in
@@ -116,14 +121,20 @@ update msg model =
         Render str ->
           let 
             newEditRecord =
-                    MeenyLatex.Driver.update 0 model.editRecord str
+                    MeenyLatex.Driver.update model.seed model.editRecord str
           in
             ({ model | 
                 editRecord = newEditRecord
-                , renderedText = renderFromEditRecord model.counter newEditRecord -- render str
+                , renderedText = renderFromEditRecord model.counter newEditRecord 
                 , counter = model.counter + 1
              }
-            , Cmd.none)        
+            , Random.generate NewSeed (Random.int 1 10000))
+
+        GenerateSeed ->
+            ( model, Random.generate NewSeed (Random.int 1 10000) )
+
+        NewSeed newSeed ->
+            ( { model | seed = newSeed }, Cmd.none )        
 
 renderFromEditRecord : Int -> EditRecord (Html msg)-> Html msg
 renderFromEditRecord counter editRecord =
