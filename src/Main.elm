@@ -2,7 +2,7 @@ module Main exposing (main)
 
 import Browser
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes as HA exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Html.Keyed as Keyed
 import Json.Encode
@@ -21,6 +21,7 @@ main =
 type alias Model a =
     { sourceText : String
     , renderedText : a
+    , editRecord : EditRecord a
     , debounce : Debounce String 
     , counter : Int
     }
@@ -58,10 +59,13 @@ $$\\int_0^1 x^n dx = \\frac{1}{n+1}$$
 init : Flags -> ( Model (Html msg), Cmd Msg )
 init flags =
     let
+        editRecord =
+            MeenyLatex.Driver.setup 0 initialText
         
         model =
             { sourceText = initialText
             , renderedText = render initialText
+            , editRecord = editRecord
             , debounce = Debounce.init
             , counter = 0
             }
@@ -78,13 +82,6 @@ subscriptions model =
 update : Msg -> Model (Html msg) -> ( Model (Html msg), Cmd Msg )
 update msg model =
     case msg of
-        -- Render ->
-        --     ( { model
-        --         | renderedText = render model.sourceText,
-        --           counter = model.counter + 1
-        --       }
-        --     , Cmd.none
-        --     )
 
         Clear ->
             ({ model | sourceText = ""
@@ -95,7 +92,6 @@ update msg model =
 
         GetContent str ->
             let
-                -- Push your values here.
                 (debounce, cmd) =
                    Debounce.push debounceConfig str model.debounce
             in
@@ -118,12 +114,23 @@ update msg model =
 
 
         Render str ->
-          ({ model | renderedText = render str, counter = model.counter + 1}, Cmd.none)        
+          let 
+            newEditRecord =
+                    MeenyLatex.Driver.update 0 model.editRecord (Debug.log "str" str)
+          in
+            ({ model | 
+                editRecord = newEditRecord
+                , renderedText = renderFromEditRecord model.counter newEditRecord -- render str
+                , counter = model.counter + 1
+             }
+            , Cmd.none)        
 
-            -- ( { model | sourceText = str
-            --            , renderedText = render str
-            --            , counter = model.counter + 1 }
-            -- , Cmd.none )
+renderFromEditRecord : Int -> EditRecord (Html msg)-> Html msg
+renderFromEditRecord counter editRecord =
+    MeenyLatex.Driver.getRenderedText "" editRecord
+        -- |> List.map (\x -> Keyed.node "div" [ HA.style "margin-bottom" "0.65em" ] [ ((String.fromInt counter), x) ])
+        |> List.map (\x -> Html.div [ HA.style "margin-bottom" "0.65em" ] [  x ])
+        |> Html.div []
 
 
 render_ : String -> Cmd Msg
