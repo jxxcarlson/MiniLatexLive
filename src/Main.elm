@@ -166,12 +166,19 @@ update msg model =
 
 
 
+normalize str = 
+  str |> String.lines |> List.filter (\x -> x /= "") |> String.join("\n") 
+
+   
 prependMacros macros_ sourceText = 
-  "$$\n" ++ (String.trim macros_) ++ "\n$$\n\n" ++ sourceText 
+  let
+    macros__ =  (macros_ |> normalize)
+  in
+    "$$\n" ++ macros__ ++ "\n$$\n\n" ++ sourceText 
 
 renderFromEditRecord : Int -> EditRecord (Html msg)-> Html msg
 renderFromEditRecord counter editRecord =
-    MeenyLatex.Driver.getRenderedText initialMacroText editRecord
+    MeenyLatex.Driver.getRenderedText editRecord
         |> List.map (\x -> Html.div [ HA.style "margin-bottom" "0.65em" ] [  x ])
         |> Html.div []
 
@@ -222,7 +229,11 @@ editor model =
   textarea (editorTextStyle ++ [ onInput GetContent, value model.sourceText ] )  [  ]
 
 macroPanel model =
+  Html.div [] [
   textarea (macroPanelStyle ++ [ onInput GetMacroText, value model.macroText ] )  [  ]
+  , p [style "clear" "left", style "margin-left" "20px", style "padding-top" "10px"]  
+    [text "Macros: write one macro per line (right panel)"]
+  ]
 
 
 renderedSource : Model (Html msg) -> Html msg
@@ -308,9 +319,10 @@ labelStyle =
 
 -- TEXT
 
-initialMacroText = """
+initialMacroText = normalize """
 \\newcommand{\\bra}{\\langle}
 \\newcommand{\\ket}{\\rangle}
+
 \\newcommand{\\set}[1]{\\{\\ #1 \\ \\}}
 \\newcommand{\\sett}[2]{\\{\\ #1 \\ |\\ #2 \\}}
 """
