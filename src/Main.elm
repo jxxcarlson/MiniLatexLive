@@ -22,6 +22,7 @@ main =
 type alias Model a =
     { sourceText : String
     , renderedText : a
+    , macroText : String 
     , editRecord : EditRecord a
     , debounce : Debounce String 
     , counter : Int
@@ -32,6 +33,7 @@ type Msg
     = Clear
     | Render String
     | GetContent String
+    | GetMacroText String
     | DebounceMsg Debounce.Msg
     | GenerateSeed
     | NewSeed Int
@@ -60,7 +62,8 @@ init flags =
         
         model =
             { sourceText = initialText
-            , renderedText = render initialText
+            , macroText = initialMacroText
+            , renderedText = render (prependMacros initialMacroText initialText)
             , editRecord = editRecord
             , debounce = Debounce.init
             , counter = 0
@@ -90,6 +93,9 @@ update msg model =
                     , debounce = debounce
                     }
                     , cmd)
+
+        GetMacroText str ->
+            ({ model | macroText = str }, Cmd.none)
                     
         DebounceMsg msg_ ->
             let
@@ -108,7 +114,7 @@ update msg model =
             n = String.fromInt model.counter
 
             newEditRecord = 
-                    (MeenyLatex.Driver.update model.seed  model.editRecord str)
+                    (MeenyLatex.Driver.update model.seed  model.editRecord (prependMacros model.macroText str))
           in
             ({ model | 
                 editRecord = newEditRecord
@@ -140,7 +146,7 @@ update msg model =
         FullRender ->    
           let 
             editRecord =
-              MeenyLatex.Driver.setup model.seed  model.sourceText 
+              MeenyLatex.Driver.setup model.seed  (prependMacros model.macroText model.sourceText)
           in 
             ( { model | counter = model.counter + 1
               , editRecord = editRecord
@@ -154,14 +160,18 @@ update msg model =
           in 
             ( { model | counter = model.counter + 1
               , editRecord = editRecord
-              , sourceText = initialText
+              , sourceText = prependMacros initialMacroText initialText
               , renderedText = renderFromEditRecord model.counter editRecord }
             , Cmd.none)
 
 
+
+prependMacros macros_ sourceText = 
+  "$$\n" ++ (String.trim macros_) ++ "\n$$\n\n" ++ sourceText 
+
 renderFromEditRecord : Int -> EditRecord (Html msg)-> Html msg
 renderFromEditRecord counter editRecord =
-    MeenyLatex.Driver.getRenderedText "" editRecord
+    MeenyLatex.Driver.getRenderedText initialMacroText editRecord
         |> List.map (\x -> Html.div [ HA.style "margin-bottom" "0.65em" ] [  x ])
         |> Html.div []
 
@@ -170,10 +180,11 @@ render_ : String -> Cmd Msg
 render_ str =
     Task.perform Render (Task.succeed str)
 
+{-| NEF -}
 render : String -> Html msg 
 render sourceText =
   let 
-    macroDefinitions = ""
+    macroDefinitions = initialMacroText
   in 
     MeenyLatex.Driver.render macroDefinitions sourceText
 
@@ -197,8 +208,8 @@ display model =
     , label "Edit or write new LaTeX below. It will be rendered in real time."
     , editor model
     , renderedSource model
+    , macroPanel model 
     , p [style "clear" "left", style "margin-left" "20px"] [clearButton 60, restoreTextButton 80, fullRenderButton 100 ]
-    
   ]
 
 
@@ -209,6 +220,9 @@ label text_ =
   
 editor model =
   textarea (editorTextStyle ++ [ onInput GetContent, value model.sourceText ] )  [  ]
+
+macroPanel model =
+  textarea (macroPanelStyle ++ [ onInput GetMacroText, value model.macroText ] )  [  ]
 
 
 renderedSource : Model (Html msg) -> Html msg
@@ -261,11 +275,14 @@ outerStyle =
   [style "margin-top" "20px"
   , style "background-color" "#e1e6e8"
   , style "padding" "20px"
-  , style "width" "930px"
+  , style "width" "1430px"
   , style "height" "670px"]
 
 editorTextStyle =
     textStyle "400px" "450px" "#fff"
+
+macroPanelStyle =
+    textStyle "300px" "450px" "#fff"
 
 renderedSourceStyle =
     textStyle "400px" "450px" "#fff"
@@ -291,12 +308,19 @@ labelStyle =
 
 -- TEXT
 
+initialMacroText = """
+\\newcommand{\\bra}{\\langle}
+\\newcommand{\\ket}{\\rangle}
+\\newcommand{\\set}[1]{\\{\\ #1 \\ \\}}
+\\newcommand{\\sett}[2]{\\{\\ #1 \\ |\\ #2 \\}}
+"""
+
 initialText = 
     """
 
 \\tableofcontents
 
-\\section{Integrals}
+\\section{Formulas}
 
 \\italic{Try editing formula \\eqref{integral:xn} or \\eqref{integral:exp} below.}
 
@@ -314,10 +338,28 @@ An improper integral:
 \\int_0^\\infty e^{-x} dx = 1
 \\end{equation}
 
+\\section{Macros}
+
+A little Dirac notation from quantum mechanics: 
+
+$$
+  \\bra x | y \\ket = \\bra y | x \\ket.
+$$
+
+The \\strong{bra} and \\strong{ket} macros are defined in the panel
+on the right.  You can always define and use math-mode macros in
+MiniLatex.
+
+More macros:
+
+$A = \\set{a \\in Z, a \\equiv 1\\ mod\\ 2}$
+
+$B = \\sett{a,b,c}{a,b,c \\in Z}$
+
 \\section{Theorems}
 
 \\begin{theorem} 
-There are infinitley many prime numbers.
+There are infinitely many prime numbers.
 \\end{theorem}
 
 \\begin{theorem} 
