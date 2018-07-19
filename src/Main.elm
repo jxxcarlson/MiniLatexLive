@@ -329,6 +329,14 @@ initialMacroText = normalize """
 
 initialText = 
     """
+% A COMMENT -- INVISIBLE!
+
+\\begin{comment}
+This multi-line comment
+should also not
+be visible in the 
+rendered text.
+\\end{comment}
 
 \\href{https://hackernoon.com/towards-latex-in-the-browser-2ff4d94a0c08}{Towards LaTeX in the Browser (Hackernoon)}
 
