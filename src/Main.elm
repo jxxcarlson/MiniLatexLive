@@ -7,7 +7,7 @@ import Html.Events exposing (onClick, onInput)
 import Html.Keyed as Keyed
 import Json.Encode
 import MeenyLatex.Differ exposing (EditRecord)
-import MeenyLatex.Driver
+import MeenyLatex.MiniLatex as MiniLatex
 import Debounce exposing(Debounce)
 import Task
 import Random
@@ -58,7 +58,7 @@ init : Flags -> ( Model (Html msg), Cmd Msg )
 init flags =
     let
         editRecord =
-            MeenyLatex.Driver.setup 0 initialText
+            MiniLatex.setup 0 initialText
         
         model =
             { sourceText = initialText
@@ -114,7 +114,7 @@ update msg model =
             n = String.fromInt model.counter
 
             newEditRecord = 
-                    (MeenyLatex.Driver.update model.seed  model.editRecord (prependMacros model.macroText str))
+                    (MiniLatex.update model.seed  model.editRecord (prependMacros model.macroText str))
           in
             ({ model | 
                 editRecord = newEditRecord
@@ -132,7 +132,7 @@ update msg model =
         Clear -> 
            let 
                 editRecord =
-                    MeenyLatex.Driver.setup 0 ""  
+                   MiniLatex.setup 0 ""  
            in
              ( { model | 
                 sourceText = ""
@@ -146,7 +146,7 @@ update msg model =
         FullRender ->    
           let 
             editRecord =
-              MeenyLatex.Driver.setup model.seed  (prependMacros model.macroText model.sourceText)
+              MiniLatex.setup model.seed  (prependMacros model.macroText model.sourceText)
           in 
             ( { model | counter = model.counter + 1
               , editRecord = editRecord
@@ -156,7 +156,7 @@ update msg model =
         RestoreText ->    
           let 
             editRecord =
-              MeenyLatex.Driver.setup model.seed initialText 
+             MiniLatex.setup model.seed initialText 
           in 
             ( { model | counter = model.counter + 1
               , editRecord = editRecord
@@ -178,7 +178,7 @@ prependMacros macros_ sourceText =
 
 renderFromEditRecord : Int -> EditRecord (Html msg)-> Html msg
 renderFromEditRecord counter editRecord =
-    MeenyLatex.Driver.getRenderedText editRecord
+    MiniLatex.getRenderedText editRecord
         |> List.map (\x -> Html.div [ HA.style "margin-bottom" "0.65em" ] [  x ])
         |> Html.div []
 
@@ -193,7 +193,7 @@ render sourceText =
   let 
     macroDefinitions = initialMacroText
   in 
-    MeenyLatex.Driver.render macroDefinitions sourceText
+    MiniLatex.render macroDefinitions sourceText
 
 
 -- VIEW FUNCTIONS 
@@ -216,7 +216,7 @@ display model =
     , editor model
     , renderedSource model
     , macroPanel model 
-    , p [style "clear" "left", style "margin-left" "20px"] [clearButton 60, restoreTextButton 80, fullRenderButton 100 ]
+    , p [style "clear" "left", style "margin-left" "20px", style "margin-top" "-20px"] [clearButton 60, restoreTextButton 80, fullRenderButton 100 ]
   ]
 
 
@@ -287,7 +287,7 @@ outerStyle =
   , style "background-color" "#e1e6e8"
   , style "padding" "20px"
   , style "width" "1430px"
-  , style "height" "670px"]
+  , style "height" "690px"]
 
 editorTextStyle =
     textStyle "400px" "450px" "#fff"
@@ -329,6 +329,18 @@ initialMacroText = normalize """
 
 initialText = 
     """
+$$
+\\newcommand{\\bra}{\\langle}
+\\newcommand{\\ket}{\\rangle}
+\\newcommand{\\set}[1]{\\{\\ #1 \\ \\}}
+\\newcommand{\\sett}[2]{\\{\\ #1 \\ |\\ #2 \\}}
+$$
+
+
+
+\\href{https://hackernoon.com/towards-latex-in-the-browser-2ff4d94a0c08}{Towards LaTeX in the Browser (Hackernoon)}
+
+\\href{https://jxxcarlson.github.io/#minilatex}{MiniLaTeX at github.io}
 
 \\tableofcontents
 
@@ -383,6 +395,32 @@ $p$ such that $p \\equiv 1\\ mod\\ 4$.
 
 \\image{http://psurl.s3.amazonaws.com/images/jc/beats-eca1.png}{Two-frequency beats}{width: 350, float: right}
 
+\\section{Lists and Tables}
+
+A list
+
+\\begin{itemize}
+
+\\item This is \\strong{just} a test.
+
+\\item And so is this: $a^2 + b^2 = c^2$
+
+\\end{itemize}
+
+A table 
+
+\\begin{indent}
+\\strong{Light Elements}
+\\begin{tabular}{ l l l l }
+Hydrogen & H & 1 & 1.008 \\\\
+Helium & He & 2 & 4.003 \\\\
+Lithium& Li & 3 & 6.94 \\\\
+Beryllium& Be& 4& 9.012 \\\\
+\\end{tabular}
+\\end{indent}
+
+
+
 \\section{Notes}
 
 MiniLatex is still a research project, but is getting closer to its first release. Please
@@ -411,6 +449,8 @@ For a more thoroughgoing use of MiniLatex, see \\href{http://www.knode.io}{www.k
 a site for class and lecture notes, etc.
 
 \\bigskip
+
+
 
 """
 
