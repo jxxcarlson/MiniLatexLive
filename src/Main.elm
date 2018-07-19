@@ -156,11 +156,11 @@ update msg model =
         RestoreText ->    
           let 
             editRecord =
-             MiniLatex.setup model.seed initialText 
+             MiniLatex.setup model.seed (prependMacros initialMacroText initialText )
           in 
             ( { model | counter = model.counter + 1
               , editRecord = editRecord
-              , sourceText = prependMacros initialMacroText initialText
+              , sourceText =  initialText
               , renderedText = renderFromEditRecord model.counter editRecord }
             , Cmd.none)
 
