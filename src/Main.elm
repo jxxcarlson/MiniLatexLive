@@ -329,14 +329,6 @@ initialMacroText = normalize """
 
 initialText = 
     """
-$$
-\\newcommand{\\bra}{\\langle}
-\\newcommand{\\ket}{\\rangle}
-\\newcommand{\\set}[1]{\\{\\ #1 \\ \\}}
-\\newcommand{\\sett}[2]{\\{\\ #1 \\ |\\ #2 \\}}
-$$
-
-
 
 \\href{https://hackernoon.com/towards-latex-in-the-browser-2ff4d94a0c08}{Towards LaTeX in the Browser (Hackernoon)}
 
