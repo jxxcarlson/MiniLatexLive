@@ -39,6 +39,7 @@ type Msg
     | NewSeed Int
     | FullRender
     | RestoreText
+    | ExampleText
 
 -- This defines how the debouncer should work.
 -- Choose the strategy for your use case.
@@ -58,7 +59,7 @@ init : Flags -> ( Model (Html msg), Cmd Msg )
 init flags =
     let
         editRecord =
-            MiniLatex.setup 0 initialText
+            MiniLatex.initializeEditRecord 0 initialText
         
         model =
             { sourceText = initialText
@@ -114,7 +115,7 @@ update msg model =
             n = String.fromInt model.counter
 
             newEditRecord = 
-                    (MiniLatex.update model.seed  model.editRecord (prependMacros model.macroText str))
+                    ( MiniLatex.updateEditRecord model.seed  model.editRecord (prependMacros model.macroText str))
           in
             ({ model | 
                 editRecord = newEditRecord
@@ -132,7 +133,7 @@ update msg model =
         Clear -> 
            let 
                 editRecord =
-                   MiniLatex.setup 0 ""  
+                   MiniLatex.initializeEditRecord 0 ""  
            in
              ( { model | 
                 sourceText = ""
@@ -146,7 +147,7 @@ update msg model =
         FullRender ->    
           let 
             editRecord =
-              MiniLatex.setup model.seed  (prependMacros model.macroText model.sourceText)
+              MiniLatex.initializeEditRecord model.seed  (prependMacros model.macroText model.sourceText)
           in 
             ( { model | counter = model.counter + 1
               , editRecord = editRecord
@@ -156,11 +157,22 @@ update msg model =
         RestoreText ->    
           let 
             editRecord =
-             MiniLatex.setup model.seed (prependMacros initialMacroText initialText )
+             MiniLatex.initializeEditRecord model.seed (prependMacros initialMacroText initialText )
           in 
             ( { model | counter = model.counter + 1
               , editRecord = editRecord
               , sourceText =  initialText
+              , renderedText = renderFromEditRecord model.counter editRecord }
+            , Cmd.none)
+
+        ExampleText ->    
+          let 
+            editRecord =
+             MiniLatex.initializeEditRecord model.seed (prependMacros initialMacroText mathExampleText )
+          in 
+            ( { model | counter = model.counter + 1
+              , editRecord = editRecord
+              , sourceText =  mathExampleText
               , renderedText = renderFromEditRecord model.counter editRecord }
             , Cmd.none)
 
@@ -211,12 +223,18 @@ view model =
 display model = 
   div [ ] [
       h1 [style "margin-left" "20px"] [text "MiniLatex Live"]
-    , p [style "margin-left" "20px", style "font-style" "italic"] [text "This app is a demo of the ongoing MiniLatex research project."]
+    , p [style "margin-left" "20px", style "font-style" "italic"] [
+        text "This app is a demo of the ongoing MiniLatex research project."
+        , br [] []
+        , text "See " 
+        , a [ href "http://www.knode.io", target "_blank"] [text "www.knode.io"]
+        , text " for a more substantial use of this technology."
+    ]
     , label "Edit or write new LaTeX below. It will be rendered in real time."
     , editor model
     , renderedSource model
     , macroPanel model 
-    , p [style "clear" "left", style "margin-left" "20px", style "margin-top" "-20px"] [clearButton 60, restoreTextButton 80, fullRenderButton 100 ]
+    , p [style "clear" "left", style "margin-left" "20px", style "margin-top" "-20px"] [clearButton 60, restoreTextButton 80, exampleButton 80, fullRenderButton 100 ]
   ]
 
 
@@ -249,8 +267,10 @@ fullRenderButton width =
     button ([ onClick FullRender ] ++ buttonStyle colorBlue width) [ text "Full Render" ]
 
 restoreTextButton width =
-    button ([ onClick RestoreText ] ++ buttonStyle colorBlue width) [ text "Restore" ]
+    button ([ onClick RestoreText ] ++ buttonStyle colorBlue width) [ text "Example 1" ]
 
+exampleButton width = 
+   button ([ onClick ExampleText ] ++ buttonStyle colorBlue width) [ text "Example 2" ]
 
 colorBlue =
     "rgb(100,100,200)"
@@ -287,7 +307,7 @@ outerStyle =
   , style "background-color" "#e1e6e8"
   , style "padding" "20px"
   , style "width" "1430px"
-  , style "height" "690px"]
+  , style "height" "710px"]
 
 editorTextStyle =
     textStyle "400px" "450px" "#fff"
@@ -325,11 +345,12 @@ initialMacroText = normalize """
 
 \\newcommand{\\set}[1]{\\{\\ #1 \\ \\}}
 \\newcommand{\\sett}[2]{\\{\\ #1 \\ |\\ #2 \\}}
+\\newcommand{\\id}{\\mathbb{\\,I\\,}}
 """
 
 initialText = 
     """
-% A COMMENT -- INVISIBLE!
+% EXAMPLE 1
 
 \\begin{comment}
 This multi-line comment
@@ -455,3 +476,152 @@ a site for class and lecture notes, etc.
 """
 
 
+mathExampleText =
+    """
+% EXAMPLE 2
+
+\\setcounter{section}{8}
+
+
+\\section{Bras and Kets}
+
+Paul Dirac invented a new notation -- the notation of bras and kets -- for working with hermitian inner products and operators on a Hilbert space $H$.  We describe the basics below, then elaborate on how these apply in the case of countable and continuous orthonormal bases.  We also discuss some of the mathematical issues raised by the delta function and by formulas such as
+
+\\begin{equation}
+\\int_{-\\infty}^\\infty \\frac{dx}{2\\pi}\\; | x \\ket\\bra x | = 1
+\\end{equation}
+a
+that Dirac introduced and which abound in the physics literature.
+
+\\subsection{The basics}
+
+For the inner product of two vectors, we write $\\bra u | v \\ket$, where this expression is linear in the second variable and conjugate linear in the first.  Thus Dirac's $\\bra u | v \\ket$ is the mathematicians's $\\bra v, w \\ket$.  
+
+In this notations, $\\bra u | c v\\ket = c\\bra u | v \\ket$, but $\\bra cu |  v\\ket = \\bar c\\bra u | v \\ket$. The symmetry condition reads $\\bra v | u \\ket = \\overline{\\bra u  | v \\ket}$.  
+
+Let $A$ be an operator.  The expression $\\bra u | A | v \\ket$ means $\\bra u | Av \\ket$.  Thus it is the same as $\\bra A^*u | v \\ket$.  
+
+The symbol $|v\\ket$ has the same meaning as $v$ if $v$ is a vector. Such vectors are called \\term{kets}.  Let $\\set{ \\psi_a }$ be a set of states, that is, eigenvectors for an operator $A$ with eigenvalue $a$.  The notations $\\psi_a$, $|\\psi_a \\ket$, and  $|a\\ket$ all stand fors the same thing.  It makes sense to say
+
+\\begin{equation}
+A|a\\ket = a|a\\ket
+\\end{equation}
+
+The expression $\\bra u |$ is the \\term{bra} associated to $u$, where $u$ is an element of the space \\emph{dual} to $V$.  That is, $u$ is a linear functional on $V$:
+
+\\begin{equation}
+\\bra u |(v) = u(v)
+\\end{equation}
+
+If $u$ is a vector in $V$, we may define the linear functional $\\phi_u(v) = \\bra u | v \\ket$.  In this case, both sides of the equation
+
+\\begin{equation}
+\\bra u |(v) = \\bra u | v \\ket
+\\end{equation}
+
+have meaning.  For finite-dimensional spaces, we may view bras as row vectors and kets as column vectors.
+
+Consider next the expression $| v \\ket \\bra v |$ where $v$ is a unit vector. it operates on a arbitrary vector $w$ by the rule
+
+\\begin{equation}
+  | w \\ket \\mapsto | v \\ket \\bra v | w \\ket
+\\end{equation}
+
+If $| w \\ket$ is orthogonal to $| v \\ket$, then the result is zero.  If $| w \\ket = | v \\ket$, then the result is $| v \\ket$, Therefore $| v \\ket \\bra v |$ is orthogonal projection onto $v$.
+
+
+\\subsection{Resolution of the identity}
+
+Let $\\set{ |v_n\\ket} = \\set{ |n\\ket}$ be a complete orthonormal set for $H$ which is indexed by integers $n = 0, 1, 2, \\ldots$.  We claim that
+
+\\begin{equation}
+\\label{resolutionofidentity}
+\\sum_n | n \\ket \\bra n | = \\id.
+\\end{equation}
+
+That is, the expression on the left, which is a sum of projections operators, is the identity operator $\\id$.  We say that the left-hand side of \\eqref{resolutionofidentity} is  \\term{resolution of the identity}.  The proof that  \\eqref{resolutionofidentity} holds an exercise in bra-ket formalism. Let $v$ be arbitrary and write
+
+\\begin{equation}
+  v = \\sum_m | m \\ket\\bra m | v \\ket 
+\\end{equation}
+
+This is the Fourier decomposition of $v$.  Note that it depends linearly on $| v \\ket$. Applying $\\sum | n \\ket\\bra n|$ to $v$, we find that 
+
+\\begin{align}
+\\left(\\sum_n  | n\\ket \\bra n |\\right) \\left(\\sum_m | m \\ket\\bra m | v \\ket \\right) &=
+\\sum_{m,n}  | n \\ket \\bra n |m \\ket\\bra m | v \\ket  \\\\
+&= \\sum_{m,n}  | n \\ket \\delta_{n,m}\\bra m | v \\ket \\\\
+& = \\sum_{m}  | m \\ket \\bra m | v \\ket \\\\
+&= v
+\\end{align}
+
+*Q.E.D.*
+
+Here the quantities $\\delta_{n,m}$ may be viewed as the elements of the identity matrix  -- possibly $n\\times n$, possibly $\\infty\\times\\infty$.
+
+Consider next an operator $\\Omega$.  Write it as
+
+\\begin{align}
+\\Omega &= \\left(\\sum_m  | m \\ket \\bra m |\\right) \\Omega \\left(\\sum_n  | n \\ket \\bra n | \\right) \\\\
+&= \\sum_{m,n}  |m | \\ket \\bra m |  \\Omega | n \\ket \\bra n | & \\\\
+& = \\sum_m  | m\\ket   \\Omega_{m.n} \\bra n |
+\\end{align}
+
+The operator  is determined by its \\term{matrix elements}
+
+\\begin{equation}
+\\Omega_{m,n} = \\bra m |  \\Omega | n \\ket
+\\end{equation}
+
+The matrix elements are the elements o the matrix of  $\\Omega$ in the given orthonormal basis, i.e.,  the $\\Omega_{m,n}$
+
+One often encounters the phrase "let us insert a resolution of the identity".  To see what this means, consider the expression $\\bra m AB m \\ket$, which we expand as follows:
+
+\\begin{align}
+\\bra m | AB n | \\ket &= \\bra m | A\\id B | n \\ket \\\\
+&= \\sum_i \\bra m A | i \\ket \\bra i | B n \\ket
+\\end{align}
+
+This is the same as the identity
+
+\\begin{equation}
+(AB)_{mn} = \\sum_i A_{mi} B_{in}
+\\end{equation}
+
+\\subsection{Continuous spectrum}
+
+One also has resolution of the identity for operators with continuous spectrum.  Take, for example, the operator $-id/dx$ which has (generalized) eigenfunctions $e^{ikx}$. Writing $| k \\ket$ for $e^{ikx}$, one has
+
+\\begin{equation}
+\\id = \\frac{1}{2\\pi} \\int_{-\\infty}^\\infty dk\\, | k \\ket \\bra k |  
+\\end{equation}
+
+Standing by itself, the meaning of this formula is a subtle matter.  However, when applied to a function, we have
+
+\\begin{equation}
+| f \\ket = \\frac{1}{2\\pi} \\int_{-\\infty}^\\infty dk\\, | k \\ket \\bra k | f \\ket 
+\\end{equation}
+
+This is an encoding of the Fourier inversion theorem:
+
+\\begin{equation}
+f(x) = \\frac{1}{\\sqrt{2\\pi}} \\int_{-\\infty}^\\infty \\hat f(k) e^{ikx} dk
+\\end{equation}
+
+
+
+
+\\subsection{References}
+
+\\href{http://ocw.mit.edu/courses/physics/8-05-quantum-physics-ii-fall-2013/lecture-notes/MIT8_05F13_Chap_04.pdf}{Dirac's Bra and Ket notation} -- Notes from B. Zwiebach's course at MIT
+
+\\href{http://www.physics.iitm.ac.in/~labs/dynamical/pedagogy/vb/delta.pdf}{All about the Dirac delta function} -- V. Balakrishnan, IIT Madras
+
+\\href{http://math.arizona.edu/~kglasner/math456/fouriertransform.pdf}{Fourier transform techniques} -- U. Arizona notes
+
+\\href{https://www.math.utah.edu/~gustafso/s2013/3150/pdeNotes/fourierTransorm-PeterOlver2013.pdf}{Fourier transform} -- Olver notes
+
+\\href{http://www.physics.rutgers.edu/~steves/501/Lectures_Final/Lec06_Propagator.pdf}{Free particle propagator}
+
+
+"""
