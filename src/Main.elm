@@ -227,7 +227,7 @@ display model =
         text "This app is a demo of the ongoing MiniLatex research project."
         , br [] []
         , text "See " 
-        , a [ href "http://www.knode.io", target "_blank"] [text "www.knode.io"]
+        , a [ href "https://knode.io", target "_blank"] [text "knode.io"]
         , text " for a more substantial use of this technology."
     ]
     , label "Edit or write new LaTeX below. It will be rendered in real time."
@@ -395,11 +395,14 @@ The \\strong{bra} and \\strong{ket} macros are defined in the panel
 on the right.  You can always define and use math-mode macros in
 MiniLatex.
 
-More macros:
+More macros \\mdash see the right-hand panel for their definitions:
 
 $A = \\set{a \\in Z, a \\equiv 1\\ mod\\ 2}$
 
 $B = \\sett{a,b,c}{a,b,c \\in Z}$
+
+Note that you can easily write about Tex in MiniLatex.  Thus the \\code{\\backslash{bra }} macro is defined as 
+\\code{\\backslash{newcommand}\\texarg{\\backslash{bra}}\\texarg{\\backslash{langle}}}.
 
 \\section{Theorems}
 
@@ -466,7 +469,7 @@ Code for MiniLatex is open source.  See the latest release at
 and note the link to the GitHub repository.
 MiniLatex Live uses an unreleased experimental version of this package.  Coming soon!
 
-For a more thoroughgoing use of MiniLatex, see \\href{http://www.knode.io}{www.knode.io} --
+For a more thoroughgoing use of MiniLatex, see \\href{https://knode.io/423}{knode.io} --
 a site for class and lecture notes, etc.
 
 \\bigskip
