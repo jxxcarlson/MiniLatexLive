@@ -417,7 +417,7 @@ $p$ such that $p \\equiv 1\\ mod\\ 4$.
 
 \\section{Images}
 
-\\image{http://psurl.s3.amazonaws.com/images/jc/beats-eca1.png}{Two-frequency beats}{width: 350, float: right}
+\\image{http://psurl.s3.amazonaws.com/images/jc/beats-eca1.png}{Figure 1. Two-frequency beats}{width: 350, align: center}
 
 \\section{Lists and Tables}
 
@@ -427,7 +427,7 @@ A list
 
 \\item This is \\strong{just} a test.
 
-\\item And so is this: $a^2 + b^2 = c^2$
+\\item \\italic{And so is this:} $a^2 + b^2 = c^2$
 
 \\end{itemize}
 
@@ -467,9 +467,10 @@ Briefly, \\href{https://www.mathjax.org/}{MathJax} is used inside dollar signs, 
 Code for MiniLatex is open source.  See the latest release at
 \\href{http://package.elm-lang.org/packages/jxxcarlson/minilatex/latest}{package.elm-lang.org},
 and note the link to the GitHub repository.
-MiniLatex Live uses an unreleased experimental version of this package.  Coming soon!
+MiniLatex Live uses an unreleased experimental version of this package. 
+It will be released in the Fall of 2018.
 
-For a more thoroughgoing use of MiniLatex, see \\href{https://knode.io/423}{knode.io} --
+For a more thoroughgoing use of MiniLatex, see \\href{https://knode.io/423}{knode.io} \\mdash
 a site for class and lecture notes, etc.
 
 \\bigskip
@@ -488,7 +489,7 @@ mathExampleText =
 
 \\section{Bras and Kets}
 
-Paul Dirac invented a new notation -- the notation of bras and kets -- for working with hermitian inner products and operators on a Hilbert space $H$.  We describe the basics below, then elaborate on how these apply in the case of countable and continuous orthonormal bases.  We also discuss some of the mathematical issues raised by the delta function and by formulas such as
+Paul Dirac invented a new notation \\mdash the notation of bras and kets \\mdash for working with hermitian inner products and operators on a Hilbert space $H$.  We describe the basics below, then elaborate on how these apply in the case of countable and continuous orthonormal bases.  We also discuss some of the mathematical issues raised by the delta function and by formulas such as
 
 \\begin{equation}
 \\int_{-\\infty}^\\infty \\frac{dx}{2\\pi}\\; | x \\ket\\bra x | = 1
@@ -558,9 +559,9 @@ This is the Fourier decomposition of $v$.  Note that it depends linearly on $| v
 &= v
 \\end{align}
 
-*Q.E.D.*
+\\strong{Q.E.D.}
 
-Here the quantities $\\delta_{n,m}$ may be viewed as the elements of the identity matrix  -- possibly $n\\times n$, possibly $\\infty\\times\\infty$.
+Here the quantities $\\delta_{n,m}$ may be viewed as the elements of the identity matrix  \\mdash possibly $n\\times n$, possibly $\\infty\\times\\infty$.
 
 Consider next an operator $\\Omega$.  Write it as
 
@@ -616,13 +617,13 @@ f(x) = \\frac{1}{\\sqrt{2\\pi}} \\int_{-\\infty}^\\infty \\hat f(k) e^{ikx} dk
 
 \\subsection{References}
 
-\\href{http://ocw.mit.edu/courses/physics/8-05-quantum-physics-ii-fall-2013/lecture-notes/MIT8_05F13_Chap_04.pdf}{Dirac's Bra and Ket notation} -- Notes from B. Zwiebach's course at MIT
+\\href{http://ocw.mit.edu/courses/physics/8-05-quantum-physics-ii-fall-2013/lecture-notes/MIT8_05F13_Chap_04.pdf}{Dirac's Bra and Ket notation} \\mdash Notes from B. Zwiebach's course at MIT
 
-\\href{http://www.physics.iitm.ac.in/~labs/dynamical/pedagogy/vb/delta.pdf}{All about the Dirac delta function} -- V. Balakrishnan, IIT Madras
+\\href{http://www.physics.iitm.ac.in/~labs/dynamical/pedagogy/vb/delta.pdf}{All about the Dirac delta function} \\mdash V. Balakrishnan, IIT Madras
 
-\\href{http://math.arizona.edu/~kglasner/math456/fouriertransform.pdf}{Fourier transform techniques} -- U. Arizona notes
+\\href{http://math.arizona.edu/~kglasner/math456/fouriertransform.pdf}{Fourier transform techniques} \\mdash U. Arizona notes
 
-\\href{https://www.math.utah.edu/~gustafso/s2013/3150/pdeNotes/fourierTransorm-PeterOlver2013.pdf}{Fourier transform} -- Olver notes
+\\href{https://www.math.utah.edu/~gustafso/s2013/3150/pdeNotes/fourierTransorm-PeterOlver2013.pdf}{Fourier transform} \\mdash Olver notes
 
 \\href{http://www.physics.rutgers.edu/~steves/501/Lectures_Final/Lec06_Propagator.pdf}{Free particle propagator}
 
