@@ -350,7 +350,13 @@ initialMacroText = normalize """
 
 initialText = 
     """
+\\title{MiniLatex Live}
+% \\author{James Carlson}
+% \\email{jxxcarlson@gmail.com}
+% \\date{August 5, 2018}
 
+
+\\maketitle
 
 % EXAMPLE 1
 
@@ -472,7 +478,8 @@ Briefly, \\href{https://www.mathjax.org/}{MathJax} is used inside dollar signs, 
 \\bigskip
 
 
-\\strong{References}
+\\section{References}
+
 \\begin{thebibliography}
 
 \\bibitem{D} \\href{https://ocw.mit.edu/courses/physics/8-05-quantum-physics-ii-fall-2013/lecture-notes/MIT8_05F13_Chap_04.pdf}{On Dirac's bra-ket notation}, MIT Courseware.
