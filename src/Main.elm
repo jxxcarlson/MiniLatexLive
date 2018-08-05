@@ -350,6 +350,8 @@ initialMacroText = normalize """
 
 initialText = 
     """
+
+
 % EXAMPLE 1
 
 \\begin{comment}
@@ -359,12 +361,24 @@ be visible in the
 rendered text.
 \\end{comment}
 
-\\href{https://hackernoon.com/towards-latex-in-the-browser-2ff4d94a0c08}{Towards LaTeX in the Browser (Hackernoon)}
-
-\\href{https://jxxcarlson.github.io/#minilatex}{MiniLaTeX at github.io}
 
 \\tableofcontents
 
+\\section{Introduction} MiniLatex is a subset of LaTeX that can be rendered live in the browser. Feel free to change the text in this window, or clear it and enter your own LaTeX source text.
+
+MiniLatex is still a research project, albeit advancing rapidly.  
+I need your feedback to make it better: jxxcarlson at gmail.  
+See \\cite{H}, \\cite{T} below for articles on the design of MiniLatex.  
+The source code is at \\cite{S}.  We are using an experimental version 
+of the code here that will be released in the Fall of 2018.
+
+For a searchable repository of MiniLatex documents, 
+see \\href{https://knode.io}{knode.io}.  
+You can create, edit, and disseminate documents 
+using \\strong{knode}.  For an example of a long 
+MiniLatex document, see 
+\\href{https://www.knode.io/424}{QF Notes} 
+\\mdash then click on the title.
 \\section{Formulas}
 
 \\italic{Try editing formula \\eqref{integral:xn} or \\eqref{integral:exp} below.}
@@ -385,7 +399,7 @@ An improper integral:
 
 \\section{Macros}
 
-A little Dirac notation from quantum mechanics: 
+A little Dirac notation \\cite{D} from quantum mechanics: 
 
 $$
   \\bra x | y \\ket = \\bra y | x \\ket.
@@ -444,36 +458,35 @@ Beryllium& Be& 4& 9.012 \\\\
 \\end{indent}
 
 
-
-\\section{Notes}
-
-MiniLatex is still a research project, but is getting closer to its first release. Please
-bear in mind that there are some rough edges. For example, the links in the
-table of contents don't work.  Lots to do! 
-
-I will try to extend the  coverage of LaTeX as time and energy permit.  
-Please send suggestions in this regard as well
-as bug reports and comments in general to jxxcarlson at gmail.
-
 \\section{Technology}
 
-MiniLatex is written in \\href{http://elm-lang.org}{Elm}, a statically typed functional
-programming language with an excellent 
-\\href{http://package.elm-lang.org/packages/elm-tools/parser/latest}{parser combinator library}.
+MiniLatex is written in \\href{http://elm-lang.org}{Elm}, the statically typed functional
+programming language created by Evan Czaplicki.  Because of its excellent 
+\\href{http://package.elm-lang.org/packages/elm-tools/parser/latest}{parser combinator library}, Elm is an ideal choice for a project like the present one.
+
 For an overview of the design of MiniLatex, see
 \\href{https://hackernoon.com/towards-latex-in-the-browser-2ff4d94a0c08}{Towards Latex in the Browser}.
 Briefly, \\href{https://www.mathjax.org/}{MathJax} is used inside dollar signs, and Elm is used outside.
 
-Code for MiniLatex is open source.  See the latest release at
-\\href{http://package.elm-lang.org/packages/jxxcarlson/minilatex/latest}{package.elm-lang.org},
-and note the link to the GitHub repository.
-MiniLatex Live uses an unreleased experimental version of this package. 
-It will be released in the Fall of 2018.
-
-For a more thoroughgoing use of MiniLatex, see \\href{https://knode.io/423}{knode.io} \\mdash
-a site for class and lecture notes, etc.
-
 \\bigskip
+
+
+\\strong{References}
+\\begin{thebibliography}
+
+\\bibitem{D} \\href{https://ocw.mit.edu/courses/physics/8-05-quantum-physics-ii-fall-2013/lecture-notes/MIT8_05F13_Chap_04.pdf}{On Dirac's bra-ket notation}, MIT Courseware.
+
+
+\\bibitem{H} James Carlson, \\href{https://hackernoon.com/towards-latex-in-the-browser-2ff4d94a0c08}{Towards LaTeX in the Browser }, Hackernoon
+
+\\bibitem{S} \\href{http://package.elm-lang.org/packages/jxxcarlson/minilatex/latest}{Source code}
+
+\\bibitem{G} James Carlson, \\href{https://knode.io/628}{MiniLaTeX Grammar},
+
+\\bibitem{T} James Carlson, \\href{https://knode.io/525}{MiniLatex Technical Report}
+
+\\end{thebibliography}
+
 
 
 
