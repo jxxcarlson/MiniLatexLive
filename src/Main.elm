@@ -464,6 +464,7 @@ MiniLatex is written in \\href{http://elm-lang.org}{Elm}, the statically typed f
 programming language created by Evan Czaplicki.  Because of its excellent 
 \\href{http://package.elm-lang.org/packages/elm-tools/parser/latest}{parser combinator library}, Elm is an ideal choice for a project like the present one.
 
+
 For an overview of the design of MiniLatex, see
 \\href{https://hackernoon.com/towards-latex-in-the-browser-2ff4d94a0c08}{Towards Latex in the Browser}.
 Briefly, \\href{https://www.mathjax.org/}{MathJax} is used inside dollar signs, and Elm is used outside.
@@ -476,12 +477,11 @@ Briefly, \\href{https://www.mathjax.org/}{MathJax} is used inside dollar signs, 
 
 \\bibitem{D} \\href{https://ocw.mit.edu/courses/physics/8-05-quantum-physics-ii-fall-2013/lecture-notes/MIT8_05F13_Chap_04.pdf}{On Dirac's bra-ket notation}, MIT Courseware.
 
+\\bibitem{G} James Carlson, \\href{https://knode.io/628}{MiniLaTeX Grammar},
 
 \\bibitem{H} James Carlson, \\href{https://hackernoon.com/towards-latex-in-the-browser-2ff4d94a0c08}{Towards LaTeX in the Browser }, Hackernoon
 
 \\bibitem{S} \\href{http://package.elm-lang.org/packages/jxxcarlson/minilatex/latest}{Source code}
-
-\\bibitem{G} James Carlson, \\href{https://knode.io/628}{MiniLaTeX Grammar},
 
 \\bibitem{T} James Carlson, \\href{https://knode.io/525}{MiniLatex Technical Report}
 
