@@ -353,8 +353,7 @@ initialText =
 \\title{MiniLatex Live}
 % \\author{James Carlson}
 % \\email{jxxcarlson@gmail.com}
-% \\date{August 5, 2018}
-
+% \\date{August 5, 2018}s
 
 \\maketitle
 
@@ -370,13 +369,23 @@ rendered text.
 
 \\tableofcontents
 
-\\section{Introduction} MiniLatex is a subset of LaTeX that can be rendered live in the browser. Feel free to change the text in this window, or clear it and enter your own LaTeX source text.
+\\section{Introduction} 
 
-MiniLatex is still a research project, albeit advancing rapidly.  
-I need your feedback to make it better: jxxcarlson at gmail.  
-See \\cite{H}, \\cite{T} below for articles on the design of MiniLatex.  
-The source code is at \\cite{S}.  We are using an experimental version 
-of the code here that will be released in the Fall of 2018.
+MiniLatex is a subset of LaTeX that can be 
+rendered live in the browser. Feel free to 
+experiment with MiniLatex using this app 
+\\mdash you can change the text in the
+left-hand window, or clear it and enter 
+your own text.
+
+MiniLatex is still a research project, albeit 
+advancing rapidly.  I need your feedback to make 
+it better: jxxcarlson at gmail.  See \\cite{H}, 
+\\cite{T} below for articles on the design of 
+MiniLatex.  The source code is at \\cite{S}.  
+We are using an experimental version of the 
+code here that will be released in the 
+Fall of 2018.
 
 For a searchable repository of MiniLatex documents, 
 see \\href{https://knode.io}{knode.io}.  
@@ -411,17 +420,21 @@ $$
   \\bra x | y \\ket = \\bra y | x \\ket.
 $$
 
-The \\strong{bra} and \\strong{ket} macros are defined in the panel
-on the right.  You can always define and use math-mode macros in
-MiniLatex.
+The \\strong{bra} and \\strong{ket} macros are defined 
+in the panel on the right.  You can always define and 
+use math-mode macros in MiniLatex.
 
-More macros \\mdash see the right-hand panel for their definitions:
+More macros \\mdash see the right-hand panel for their 
+definitions:
 
 $A = \\set{a \\in Z, a \\equiv 1\\ mod\\ 2}$
 
 $B = \\sett{a,b,c}{a,b,c \\in Z}$
 
-Note that you can easily write about Tex in MiniLatex.  Thus the \\code{\\backslash{bra }} macro is defined as 
+Note that you can easily write 
+about Tex in MiniLatex.  
+Thus the  \\code{\\backslash{bra }} 
+macro is defined as 
 \\code{\\backslash{newcommand}\\texarg{\\backslash{bra}}\\texarg{\\backslash{langle}}}.
 
 \\section{Theorems}
