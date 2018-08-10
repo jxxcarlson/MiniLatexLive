@@ -14,7 +14,12 @@ import Random
 
 
 main =
-    Browser.element { view = view, update = update, init = init, subscriptions = subscriptions }
+    Browser.element { 
+         view = view
+       , update = update
+       , init = init
+       , subscriptions = subscriptions 
+    }
 
 
 -- TYPES
