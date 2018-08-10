@@ -355,10 +355,14 @@ initialMacroText = normalize """
 
 initialText = 
     """
+
+
 \\title{MiniLatex Live}
 % \\author{James Carlson}
 % \\email{jxxcarlson@gmail.com}
 % \\date{August 5, 2018}s
+
+
 
 \\maketitle
 
@@ -481,6 +485,31 @@ Beryllium& Be& 4& 9.012 \\\\
 \\end{tabular}
 \\end{indent}
 
+\\section{Errors and related matters}
+
+\\foo{
+
+Errors are rendered in real time and are reported in red, in place, as above. The error message above is not great, but at least you know where it is in the text.  We plan to have \\strong{much better } error reporting soon.
+
+For another example, try adding the text below to this document
+
+\\begin{indent}
+\\backslash{begin}\\texarg{foo}
+\\end{indent}
+
+We plan to make error reporting much better yet.  Note, by the way, what happens when a nonexistent macro like \\italic{hohoho } is used:
+
+\\begin{indent}
+\\hohoho{123}
+\\end{indent}
+
+This is intentional.  Note also what happens when we use a nonexistent environment like \\italic{joke}:
+
+\\begin{joke}
+Did you here the one about the mathematician, the philosopher, and the engineer?
+\\end{joke}
+
+This is also intentional, and can even be useful.
 
 \\section{Technology}
 
@@ -511,7 +540,6 @@ Briefly, \\href{https://www.mathjax.org/}{MathJax} is used inside dollar signs, 
 \\bibitem{T} James Carlson, \\href{https://knode.io/525}{MiniLatex Technical Report}
 
 \\end{thebibliography}
-
 
 
 
