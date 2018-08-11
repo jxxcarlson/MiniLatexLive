@@ -357,6 +357,7 @@ initialText =
     """
 
 
+
 \\title{MiniLatex Live}
 % \\author{James Carlson}
 % \\email{jxxcarlson@gmail.com}
@@ -487,9 +488,9 @@ Beryllium& Be& 4& 9.012 \\\\
 
 \\section{Errors and related matters}
 
-\\foo{
+\\href{http://nytimes.com}{NYT
 
-Errors are rendered in real time and are reported in red, in place, as above. The error message above is not great, but at least you know where it is in the text.  We plan to have \\strong{much better } error reporting soon.
+Errors are rendered in real time and are reported in red, in place, as above. The error message above is not the greatest, but it is somewhat informative.  We plan to have \\strong{much better } error reporting soon.
 
 For another example, try adding the text below to this document
 
@@ -540,6 +541,8 @@ Briefly, \\href{https://www.mathjax.org/}{MathJax} is used inside dollar signs, 
 \\bibitem{T} James Carlson, \\href{https://knode.io/525}{MiniLatex Technical Report}
 
 \\end{thebibliography}
+
+
 
 
 
