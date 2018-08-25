@@ -6,8 +6,8 @@ import Html.Attributes as HA exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Html.Keyed as Keyed
 import Json.Encode
-import MeenyLatex.Differ exposing (EditRecord)
-import MeenyLatex.MiniLatex as MiniLatex
+import MiniLatex.Differ exposing (EditRecord)
+import MiniLatex.MiniLatex as MiniLatex
 import Debounce exposing(Debounce)
 import Task
 import Random
