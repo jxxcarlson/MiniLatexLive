@@ -490,8 +490,9 @@ Beryllium& Be& 4& 9.012 \\\\
 
 \\href{http://nytimes.com}{NYT
 
-Errors are rendered in real time and are reported in red, in place, as above. The error message above is not the greatest, but it is somewhat informative.  We plan to have \\strong{much better } error reporting soon.
+Pythagoras is said to have said that $z^2 + b^2 = c^2
 
+Errors are rendered in real time and are reported in red, in place, as above. 
 For another example, try adding the text below to this document
 
 \\begin{indent}
