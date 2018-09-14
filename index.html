@@ -10,7 +10,12 @@
 			MathJax.Hub.Config(
 				{ tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
 				processEscapes: true,
-				TeX: { equationNumbers: {autoNumber: "AMS"}}
+				messageStyle: "none",
+				processSectionDelay: 0,
+				processUpdateTime: 0,
+				TeX: { equationNumbers: {autoNumber: "AMS"},
+					   noErrors: {disabled: true}
+					  }
 				}
 	        );
 		</script>
