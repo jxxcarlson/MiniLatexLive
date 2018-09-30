@@ -1,6 +1,7 @@
-module Main exposing (main)
+module Main exposing (Flags, Model, Msg(..), buttonStyle, clearButton, colorBlue, colorDark, colorLight, debounceConfig, display, editor, editorTextStyle, exampleButton, fullRenderButton, init, initialMacroText, initialText, label, labelStyle, macroPanel, macroPanelStyle, main, mathExampleText, normalize, outerStyle, prependMacros, render, renderFromEditRecord, render_, renderedSource, renderedSourceStyle, restoreTextButton, subscriptions, textStyle, update, view)
 
 import Browser
+import Debounce exposing (Debounce)
 import Html exposing (..)
 import Html.Attributes as HA exposing (..)
 import Html.Events exposing (onClick, onInput)
@@ -8,31 +9,34 @@ import Html.Keyed as Keyed
 import Json.Encode
 import MiniLatex.Differ exposing (EditRecord)
 import MiniLatex.MiniLatex as MiniLatex
-import Debounce exposing(Debounce)
-import Task
 import Random
+import Task
 
 
+main : Program Flags (Model (Html Msg)) Msg
 main =
-    Browser.element { 
-         view = view
-       , update = update
-       , init = init
-       , subscriptions = subscriptions 
-    }
+    Browser.element
+        { view = view
+        , update = update
+        , init = init
+        , subscriptions = subscriptions
+        }
+
 
 
 -- TYPES
 
+
 type alias Model a =
     { sourceText : String
     , renderedText : a
-    , macroText : String 
+    , macroText : String
     , editRecord : EditRecord a
-    , debounce : Debounce String 
+    , debounce : Debounce String
     , counter : Int
     , seed : Int
     }
+
 
 type Msg
     = Clear
@@ -46,26 +50,33 @@ type Msg
     | RestoreText
     | ExampleText
 
+
+
 -- This defines how the debouncer should work.
 -- Choose the strategy for your use case.
+
+
 debounceConfig : Debounce.Config Msg
 debounceConfig =
-  { strategy = Debounce.later 250
-  , transform = DebounceMsg
-  }
+    { strategy = Debounce.later 250
+    , transform = DebounceMsg
+    }
+
 
 type alias Flags =
     {}
 
 
+
 -- MAIN FUNCTIONS
+
 
 init : Flags -> ( Model (Html msg), Cmd Msg )
 init flags =
     let
         editRecord =
             MiniLatex.initializeEditRecord 0 initialText
-        
+
         model =
             { sourceText = initialText
             , macroText = initialMacroText
@@ -75,7 +86,6 @@ init flags =
             , counter = 0
             , seed = 0
             }
-    
     in
     ( model, Cmd.none )
 
@@ -88,46 +98,47 @@ subscriptions model =
 update : Msg -> Model (Html msg) -> ( Model (Html msg), Cmd Msg )
 update msg model =
     case msg of
-
         GetContent str ->
             let
-                (debounce, cmd) =
-                   Debounce.push debounceConfig str model.debounce
+                ( debounce, cmd ) =
+                    Debounce.push debounceConfig str model.debounce
             in
-                ({ model
-                    | sourceText = str
-                    , debounce = debounce
-                    }
-                    , cmd)
+            ( { model
+                | sourceText = str
+                , debounce = debounce
+              }
+            , cmd
+            )
 
         GetMacroText str ->
-            ({ model | macroText = str }, Cmd.none)
-                    
+            ( { model | macroText = str }, Cmd.none )
+
         DebounceMsg msg_ ->
             let
-                (debounce, cmd) =
+                ( debounce, cmd ) =
                     Debounce.update
                         debounceConfig
                         (Debounce.takeLast render_)
                         msg_
                         model.debounce
             in
-                ({ model | debounce = debounce }, cmd)  
-
+            ( { model | debounce = debounce }, cmd )
 
         Render str ->
-          let 
-            n = String.fromInt model.counter
+            let
+                n =
+                    String.fromInt model.counter
 
-            newEditRecord = 
-                    ( MiniLatex.updateEditRecord model.seed  model.editRecord (prependMacros model.macroText str))
-          in
-            ({ model | 
-                editRecord = newEditRecord
-                , renderedText = renderFromEditRecord model.counter newEditRecord 
+                newEditRecord =
+                    MiniLatex.updateEditRecord model.seed model.editRecord (prependMacros model.macroText str)
+            in
+            ( { model
+                | editRecord = newEditRecord
+                , renderedText = renderFromEditRecord model.counter newEditRecord
                 , counter = model.counter + 1
-             }
-            , Random.generate NewSeed (Random.int 1 10000))
+              }
+            , Random.generate NewSeed (Random.int 1 10000)
+            )
 
         GenerateSeed ->
             ( model, Random.generate NewSeed (Random.int 1 10000) )
@@ -135,68 +146,80 @@ update msg model =
         NewSeed newSeed ->
             ( { model | seed = newSeed }, Cmd.none )
 
-        Clear -> 
-           let 
+        Clear ->
+            let
                 editRecord =
-                   MiniLatex.initializeEditRecord 0 ""  
-           in
-             ( { model | 
-                sourceText = ""
+                    MiniLatex.initializeEditRecord 0 ""
+            in
+            ( { model
+                | sourceText = ""
                 , editRecord = editRecord
-                , renderedText = renderFromEditRecord model.counter editRecord 
+                , renderedText = renderFromEditRecord model.counter editRecord
                 , counter = model.counter + 1
-                }
-             , Cmd.none)
+              }
+            , Cmd.none
+            )
+
+        FullRender ->
+            let
+                editRecord =
+                    MiniLatex.initializeEditRecord model.seed (prependMacros model.macroText model.sourceText)
+            in
+            ( { model
+                | counter = model.counter + 1
+                , editRecord = editRecord
+                , renderedText = renderFromEditRecord model.counter editRecord
+              }
+            , Cmd.none
+            )
+
+        RestoreText ->
+            let
+                editRecord =
+                    MiniLatex.initializeEditRecord model.seed (prependMacros initialMacroText initialText)
+            in
+            ( { model
+                | counter = model.counter + 1
+                , editRecord = editRecord
+                , sourceText = initialText
+                , renderedText = renderFromEditRecord model.counter editRecord
+              }
+            , Cmd.none
+            )
+
+        ExampleText ->
+            let
+                editRecord =
+                    MiniLatex.initializeEditRecord model.seed (prependMacros initialMacroText mathExampleText)
+            in
+            ( { model
+                | counter = model.counter + 1
+                , editRecord = editRecord
+                , sourceText = mathExampleText
+                , renderedText = renderFromEditRecord model.counter editRecord
+              }
+            , Cmd.none
+            )
 
 
-        FullRender ->    
-          let 
-            editRecord =
-              MiniLatex.initializeEditRecord model.seed  (prependMacros model.macroText model.sourceText)
-          in 
-            ( { model | counter = model.counter + 1
-              , editRecord = editRecord
-              , renderedText = renderFromEditRecord model.counter editRecord }
-            , Cmd.none)
-
-        RestoreText ->    
-          let 
-            editRecord =
-             MiniLatex.initializeEditRecord model.seed (prependMacros initialMacroText initialText )
-          in 
-            ( { model | counter = model.counter + 1
-              , editRecord = editRecord
-              , sourceText =  initialText
-              , renderedText = renderFromEditRecord model.counter editRecord }
-            , Cmd.none)
-
-        ExampleText ->    
-          let 
-            editRecord =
-             MiniLatex.initializeEditRecord model.seed (prependMacros initialMacroText mathExampleText )
-          in 
-            ( { model | counter = model.counter + 1
-              , editRecord = editRecord
-              , sourceText =  mathExampleText
-              , renderedText = renderFromEditRecord model.counter editRecord }
-            , Cmd.none)
+normalize : String -> String
+normalize str =
+    str |> String.lines |> List.filter (\x -> x /= "") |> String.join "\n"
 
 
+prependMacros : String -> String -> String
+prependMacros macros_ sourceText =
+    let
+        macros__ =
+            macros_ |> normalize
+    in
+    "$$\n" ++ macros__ ++ "\n$$\n\n" ++ sourceText
 
-normalize str = 
-  str |> String.lines |> List.filter (\x -> x /= "") |> String.join("\n") 
 
-   
-prependMacros macros_ sourceText = 
-  let
-    macros__ =  (macros_ |> normalize)
-  in
-    "$$\n" ++ macros__ ++ "\n$$\n\n" ++ sourceText 
-
-renderFromEditRecord : Int -> EditRecord (Html msg)-> Html msg
+renderFromEditRecord : Int -> EditRecord (Html msg) -> Html msg
 renderFromEditRecord counter editRecord =
     MiniLatex.getRenderedText editRecord
-        |> List.map (\x -> Html.div [ HA.style "margin-bottom" "0.65em" ] [  x ])
+        |> List.map (\x -> Html.div [ HA.style "margin-bottom" "0.65em" ] [ x ])
         |> Html.div []
 
 
@@ -204,78 +227,91 @@ render_ : String -> Cmd Msg
 render_ str =
     Task.perform Render (Task.succeed str)
 
-{-| NEF -}
-render : String -> Html msg 
+
+{-| NEF
+-}
+render : String -> Html msg
 render sourceText =
-  let 
-    macroDefinitions = initialMacroText
-  in 
+    let
+        macroDefinitions =
+            initialMacroText
+    in
     MiniLatex.render macroDefinitions sourceText
 
 
--- VIEW FUNCTIONS 
+
+-- VIEW FUNCTIONS
 
 
+view : Model (Html Msg) -> Html Msg
 view model =
     div outerStyle
-        [ 
-            display model
+        [ display model
         ]
-    
 
--- DISPLAY: EDITOR AND RENDERED TEXT 
 
-display model = 
-  div [ ] [
-      h1 [style "margin-left" "20px"] [text "MiniLatex Live"]
-    , p [style "margin-left" "20px", style "font-style" "italic"] [
-        text "This app is a demo of the ongoing MiniLatex research project."
-        , br [] []
-        , text "See " 
-        , a [ href "https://knode.io", target "_blank"] [text "knode.io"]
-        , text " for a more substantial use of this technology."
-    ]
-    , label "Edit or write new LaTeX below. It will be rendered in real time."
-    , editor model
-    , renderedSource model
-    , macroPanel model 
-    , p [style "clear" "left", style "margin-left" "20px", style "margin-top" "-20px"] [clearButton 60, restoreTextButton 80, exampleButton 80, fullRenderButton 100 ]
-  ]
 
+-- DISPLAY: EDITOR AND RENDERED TEXT
+
+
+display : Model (Html Msg) -> Html Msg
+display model =
+    div []
+        [ h1 [ style "margin-left" "20px" ] [ text "MiniLatex Live" ]
+        , p [ style "margin-left" "20px", style "font-style" "italic" ]
+            [ text "This app is a demo of the ongoing MiniLatex research project."
+            , br [] []
+            , text "See "
+            , a [ href "https://knode.io", target "_blank" ] [ text "knode.io" ]
+            , text " for a more substantial use of this technology."
+            ]
+        , label "Edit or write new LaTeX below. It will be rendered in real time."
+        , editor model
+        , renderedSource model
+        , macroPanel model
+        , p [ style "clear" "left", style "margin-left" "20px", style "margin-top" "-20px" ] [ clearButton 60, restoreTextButton 80, exampleButton 80, fullRenderButton 100 ]
+        ]
 
 
 label text_ =
     p labelStyle [ text text_ ]
-  
-  
-editor model =
-  textarea (editorTextStyle ++ [ onInput GetContent, value model.sourceText ] )  [  ]
 
+
+editor : Model (Html msg) -> Html Msg
+editor model =
+    textarea (editorTextStyle ++ [ onInput GetContent, value model.sourceText ]) []
+
+
+macroPanel : Model (Html msg) -> Html Msg
 macroPanel model =
-  Html.div [] [
-  textarea (macroPanelStyle ++ [ onInput GetMacroText, value model.macroText ] )  [  ]
-  , p [style "clear" "left", style "margin-left" "20px", style "padding-top" "10px"]  
-    [text "Macros: write one macro per line (right panel)"]
-  ]
+    Html.div []
+        [ textarea (macroPanelStyle ++ [ onInput GetMacroText, value model.macroText ]) []
+        , p [ style "clear" "left", style "margin-left" "20px", style "padding-top" "10px" ]
+            [ text "Macros: write one macro per line (right panel)" ]
+        ]
 
 
 renderedSource : Model (Html msg) -> Html msg
 renderedSource model =
-        Html.div renderedSourceStyle
-           [ model.renderedText]
+    Html.div renderedSourceStyle
+        [ model.renderedText ]
 
 
 clearButton width =
     button ([ onClick Clear ] ++ buttonStyle colorBlue width) [ text "Clear" ]
 
+
 fullRenderButton width =
     button ([ onClick FullRender ] ++ buttonStyle colorBlue width) [ text "Full Render" ]
+
 
 restoreTextButton width =
     button ([ onClick RestoreText ] ++ buttonStyle colorBlue width) [ text "Example 1" ]
 
-exampleButton width = 
-   button ([ onClick ExampleText ] ++ buttonStyle colorBlue width) [ text "Example 2" ]
+
+exampleButton width =
+    button ([ onClick ExampleText ] ++ buttonStyle colorBlue width) [ text "Example 2" ]
+
 
 colorBlue =
     "rgb(100,100,200)"
@@ -293,32 +329,40 @@ buttonStyle : String -> Int -> List (Html.Attribute msg)
 buttonStyle color width =
     let
         realWidth =
-            width + 0 |> String.fromInt |> \x -> x ++ "px"
+            width + 0 |> String.fromInt |> (\x -> x ++ "px")
     in
-        [ style "backgroundColor" color
-        , style "color" "white"
-        , style "width" realWidth
-        , style "height" "25px"
-        , style "margin-top" "20px"
-        , style "margin-right" "12px"
-        , style "font-size" "9pt"
-        , style "text-align" "center"
-        , style "border" "none"
-        ]
+    [ style "backgroundColor" color
+    , style "color" "white"
+    , style "width" realWidth
+    , style "height" "25px"
+    , style "margin-top" "20px"
+    , style "margin-right" "12px"
+    , style "font-size" "9pt"
+    , style "text-align" "center"
+    , style "border" "none"
+    ]
+
+
+
 -- STYLE FUNCTIONS
 
-outerStyle = 
-  [style "margin-top" "20px"
-  , style "background-color" "#e1e6e8"
-  , style "padding" "20px"
-  , style "width" "1430px"
-  , style "height" "710px"]
+
+outerStyle =
+    [ style "margin-top" "20px"
+    , style "background-color" "#e1e6e8"
+    , style "padding" "20px"
+    , style "width" "1430px"
+    , style "height" "710px"
+    ]
+
 
 editorTextStyle =
     textStyle "400px" "450px" "#fff"
 
+
 macroPanelStyle =
     textStyle "300px" "450px" "#fff"
+
 
 renderedSourceStyle =
     textStyle "400px" "450px" "#fff"
@@ -334,6 +378,7 @@ textStyle width height color =
     , style "float" "left"
     ]
 
+
 labelStyle =
     [ style "margin-top" "5px"
     , style "margin-bottom" "0px"
@@ -342,9 +387,12 @@ labelStyle =
     ]
 
 
+
 -- TEXT
 
-initialMacroText = normalize """
+
+initialMacroText =
+    normalize """
 \\newcommand{\\bra}{\\langle}
 \\newcommand{\\ket}{\\rangle}
 
@@ -353,7 +401,8 @@ initialMacroText = normalize """
 \\newcommand{\\id}{\\mathbb{\\,I\\,}}
 """
 
-initialText = 
+
+initialText =
     """
 
 
@@ -472,6 +521,15 @@ A list
 
 \\item \\italic{And so is this:} $a^2 + b^2 = c^2$
 
+\\begin{itemize}
+
+\\item Items can be nested
+
+\\item And you can do this: 
+$ \\frac{1}{1 + \\frac{2}{3}} $
+
+\\end{itemize}
+
 \\end{itemize}
 
 A table 
@@ -492,14 +550,10 @@ Beryllium& Be& 4& 9.012 \\\\
 
 Pythagoras is said to have said that $z^2 + b^2 = c^2
 
-Errors are rendered in real time and are reported in red, in place, as above. 
-For another example, try adding the text below to this document
+Errors, as illustrated above, are rendered in real time and are reported in red, in place. Compare
+with the source text on the left. 
 
-\\begin{indent}
-\\backslash{begin}\\texarg{foo}
-\\end{indent}
-
-We plan to make error reporting much better yet.  Note, by the way, what happens when a nonexistent macro like \\italic{hohoho } is used:
+We plan to make error reporting still better, giving detailed context.  Note, by the way, what happens when a nonexistent macro like \\italic{hohoho } is used:
 
 \\begin{indent}
 \\hohoho{123}
@@ -508,10 +562,10 @@ We plan to make error reporting much better yet.  Note, by the way, what happens
 This is intentional.  Note also what happens when we use a nonexistent environment like \\italic{joke}:
 
 \\begin{joke}
-Did you here the one about the mathematician, the philosopher, and the engineer?
+Did you hear the one about the mathematician, the philosopher, and the engineer?
 \\end{joke}
 
-This is also intentional, and can even be useful.
+This default treatment of unkown environments is also intentional, and can even be useful.
 
 \\section{Technology}
 
