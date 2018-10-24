@@ -501,7 +501,7 @@ macro is defined as
 \\newcommand{\\hello}[1]{Hello \\strong{#1}!}
 
 We have added an experimental macro expansion feature that permits
-the auhtor to define new text-mode macros in a MiniLatex document.
+the author to define new text-mode macros in a MiniLatex document.
 We add, for example, the text
 
 \\begin{verbatim}
