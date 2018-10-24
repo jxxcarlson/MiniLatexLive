@@ -471,7 +471,7 @@ An improper integral:
 \\int_0^\\infty e^{-x} dx = 1
 \\end{equation}
 
-\\section{Macros}
+\\section{Math-mode Macros}
 
 A little Dirac notation \\cite{D} from quantum mechanics: 
 
@@ -495,6 +495,27 @@ about Tex in MiniLatex.
 Thus the  \\code{\\backslash{bra }} 
 macro is defined as 
 \\code{\\backslash{newcommand}\\texarg{\\backslash{bra}}\\texarg{\\backslash{langle}}}.
+
+\\section{Text-mode Macros}
+
+\\newcommand{\\hello}[1]{Hello \\strong{#1}!}
+
+We have added an experimental macro expansion feature that permits
+the auhtor to define new text-mode macros in a MiniLatex document.
+We add, for example, the text
+
+\\begin{verbatim}
+\\newcommand{\\hello}[1]{Hello \\strong{#1}!}
+
+\\hello{John}
+\\end{verbatim}
+
+Then the macro \\backslash{hello}\\texarg{John} renders as
+
+\\hello{John}
+
+The macro expansion feature will need a lot more work and testing.
+We also plan to add a feature so that authors can define new environments.
 
 \\section{Theorems}
 
