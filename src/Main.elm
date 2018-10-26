@@ -500,17 +500,34 @@ macro is defined as
 
 \\newcommand{\\hello}[1]{Hello \\strong{#1}!}
 
+
+
+
 We have added an experimental macro expansion feature that permits
 the author to define new text-mode macros in a MiniLatex document.
 For example, if we add the text
+
+\\newcommand{\\boss}{Phineas Fogg}
+
+\\begin{verbatim}
+\\newcommand{\\boss}{Phineas Fogg}
+\\end{verbatim}
+
+then saying 
+
+\\begin{verbatim}
+\\italic{My boss is \\boss.}
+\\end{verbatim}
+
+produces \\italic{My boss is \\boss.}
+Likewise, if one says
 
 \\begin{verbatim}
 \\newcommand{\\hello}[1]{Hello \\strong{#1}!}
 \\end{verbatim}
 
 then the macro \\backslash{hello}\\texarg{John} renders as \\hello{John}
-
-Likewiese, if we make the definition,
+For one more example,  make the definition
 
 \\begin{verbatim}
 \\newcommand{\\reverseconcat}[3]{#3#2#1} 
@@ -518,7 +535,7 @@ Likewiese, if we make the definition,
 
 \\newcommand{\\reverseconcat}[3]{#3#2#1} 
 
-then \\backslash{reverseconcat}\\texarg{A}\\texarg{B}\\texarg{C} = \\reverseconcat{A}{B}{C}
+Then \\backslash{reverseconcat}\\texarg{A}\\texarg{B}\\texarg{C} = \\reverseconcat{A}{B}{C}
 
 The macro expansion feature will need a lot more work and testing.
 We also plan to add a feature so that authors can define new environments.
