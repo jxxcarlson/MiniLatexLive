@@ -540,6 +540,23 @@ Then \\backslash{reverseconcat}\\texarg{A}\\texarg{B}\\texarg{C} = \\reverseconc
 The macro expansion feature will need a lot more work and testing.
 We also plan to add a feature so that authors can define new environments.
 
+
+
+\\section{MiniLatex Macros}
+
+MiniLatex has a number of macros of its own,  For 
+example, text can be rendered in various colors, \\red{such as red} 
+and \\blue{blue}. Text can \\highlight{be highlighted} 
+and can \\strike{also be struck}. Here are the macros:
+
+\\begin{verbatim}
+\\red
+\\blue
+\\highlight
+\\strike
+\\end{verbatim}
+
+
 \\section{Theorems}
 
 \\begin{theorem} 
