@@ -1,4 +1,4 @@
-module Main exposing (Flags, Model, Msg(..), buttonStyle, clearButton, colorBlue, colorDark, colorLight, debounceConfig, display, editor, editorTextStyle, exampleButton, fullRenderButton, init, initialMacroText, initialText, label, labelStyle, macroPanel, macroPanelStyle, main, mathExampleText, normalize, outerStyle, prependMacros, render, renderFromEditRecord, render_, renderedSource, renderedSourceStyle, restoreTextButton, subscriptions, textStyle, update, view)
+module Main exposing(main)
 
 import Browser
 import Debounce exposing (Debounce)
@@ -11,7 +11,8 @@ import MiniLatex.Differ exposing (EditRecord)
 import MiniLatex.MiniLatex as MiniLatex
 import Random
 import Task
-import Strings exposing(initialText, mathExampleText)
+import Strings
+import Style exposing(..)
 
 
 main : Program Flags (Model (Html Msg)) Msg
@@ -22,10 +23,6 @@ main =
         , init = init
         , subscriptions = subscriptions
         }
-
-
-
--- TYPES
 
 
 type alias Model a =
@@ -53,10 +50,6 @@ type Msg
 
 
 
--- This defines how the debouncer should work.
--- Choose the strategy for your use case.
-
-
 debounceConfig : Debounce.Config Msg
 debounceConfig =
     { strategy = Debounce.later 250
@@ -69,19 +62,16 @@ type alias Flags =
 
 
 
--- MAIN FUNCTIONS
-
-
 init : Flags -> ( Model (Html msg), Cmd Msg )
 init flags =
     let
         editRecord =
-            MiniLatex.initializeEditRecord 0 initialText
+            MiniLatex.initializeEditRecord 0 Strings.initialText
 
         model =
-            { sourceText = initialText
+            { sourceText = Strings.initialText
             , macroText = initialMacroText
-            , renderedText = render (prependMacros initialMacroText initialText)
+            , renderedText = render (prependMacros initialMacroText Strings.initialText)
             , editRecord = editRecord
             , debounce = Debounce.init
             , counter = 0
@@ -89,6 +79,10 @@ init flags =
             }
     in
     ( model, Cmd.none )
+
+
+initialMacroText =
+    normalize Strings.macros
 
 
 subscriptions : Model (Html msg) -> Sub Msg
@@ -177,12 +171,12 @@ update msg model =
         RestoreText ->
             let
                 editRecord =
-                    MiniLatex.initializeEditRecord model.seed (prependMacros initialMacroText initialText)
+                    MiniLatex.initializeEditRecord model.seed (prependMacros initialMacroText Strings.initialText)
             in
             ( { model
                 | counter = model.counter + 1
                 , editRecord = editRecord
-                , sourceText = initialText
+                , sourceText = Strings.initialText
                 , renderedText = renderFromEditRecord model.counter editRecord
               }
             , Cmd.none
@@ -191,12 +185,12 @@ update msg model =
         ExampleText ->
             let
                 editRecord =
-                    MiniLatex.initializeEditRecord model.seed (prependMacros initialMacroText mathExampleText)
+                    MiniLatex.initializeEditRecord model.seed (prependMacros initialMacroText Strings.mathExampleText)
             in
             ( { model
                 | counter = model.counter + 1
                 , editRecord = editRecord
-                , sourceText = mathExampleText
+                , sourceText = Strings.mathExampleText
                 , renderedText = renderFromEditRecord model.counter editRecord
               }
             , Cmd.none
@@ -229,8 +223,7 @@ render_ str =
     Task.perform Render (Task.succeed str)
 
 
-{-| NEF
--}
+
 render : String -> Html msg
 render sourceText =
     let
@@ -240,19 +233,15 @@ render sourceText =
     MiniLatex.render macroDefinitions sourceText
 
 
-
+--
 -- VIEW FUNCTIONS
-
+---
 
 view : Model (Html Msg) -> Html Msg
 view model =
     div outerStyle
         [ display model
         ]
-
-
-
--- DISPLAY: EDITOR AND RENDERED TEXT
 
 
 display : Model (Html Msg) -> Html Msg
@@ -298,6 +287,11 @@ renderedSource model =
         [ model.renderedText ]
 
 
+-- 
+-- BUTTONS
+--
+
+
 clearButton width =
     button ([ onClick Clear ] ++ buttonStyle colorBlue width) [ text "Clear" ]
 
@@ -312,91 +306,3 @@ restoreTextButton width =
 
 exampleButton width =
     button ([ onClick ExampleText ] ++ buttonStyle colorBlue width) [ text "Example 2" ]
-
-
-colorBlue =
-    "rgb(100,100,200)"
-
-
-colorLight =
-    "#88a"
-
-
-colorDark =
-    "#444"
-
-
-buttonStyle : String -> Int -> List (Html.Attribute msg)
-buttonStyle color width =
-    let
-        realWidth =
-            width + 0 |> String.fromInt |> (\x -> x ++ "px")
-    in
-    [ style "backgroundColor" color
-    , style "color" "white"
-    , style "width" realWidth
-    , style "height" "25px"
-    , style "margin-top" "20px"
-    , style "margin-right" "12px"
-    , style "font-size" "9pt"
-    , style "text-align" "center"
-    , style "border" "none"
-    ]
-
-
-
--- STYLE FUNCTIONS
-
-
-outerStyle =
-    [ style "margin-top" "20px"
-    , style "background-color" "#e1e6e8"
-    , style "padding" "20px"
-    , style "width" "1430px"
-    , style "height" "710px"
-    ]
-
-
-editorTextStyle =
-    textStyle "400px" "450px" "#fff"
-
-
-macroPanelStyle =
-    textStyle "300px" "450px" "#fff"
-
-
-renderedSourceStyle =
-    textStyle "400px" "450px" "#fff"
-
-
-textStyle width height color =
-    [ style "width" width
-    , style "height" height
-    , style "padding" "15px"
-    , style "margin-left" "20px"
-    , style "background-color" color
-    , style "overflow" "scroll"
-    , style "float" "left"
-    ]
-
-
-labelStyle =
-    [ style "margin-top" "5px"
-    , style "margin-bottom" "0px"
-    , style "margin-left" "20px"
-    , style "font-weight" "bold"
-    ]
-
-
-
--- TEXT
-
-initialMacroText =
-    normalize """
-\\newcommand{\\bra}{\\langle}
-\\newcommand{\\ket}{\\rangle}
-
-\\newcommand{\\set}[1]{\\{\\ #1 \\ \\}}
-\\newcommand{\\sett}[2]{\\{\\ #1 \\ |\\ #2 \\}}
-\\newcommand{\\id}{\\mathbb{\\,I\\,}}
-"""

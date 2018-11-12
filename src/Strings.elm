@@ -1,7 +1,15 @@
-module Strings exposing(..)
+module Strings exposing(initialText, mathExampleText, macros)
 
 
+macros = 
+    """"
+\\newcommand{\\bra}{\\langle}
+\\newcommand{\\ket}{\\rangle}
 
+\\newcommand{\\set}[1]{\\{\\ #1 \\ \\}}
+\\newcommand{\\sett}[2]{\\{\\ #1 \\ |\\ #2 \\}}
+\\newcommand{\\id}{\\mathbb{\\,I\\,}}
+"""
 
 initialText =
     """
