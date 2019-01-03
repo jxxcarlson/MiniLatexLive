@@ -1,8 +1,8 @@
-module Strings exposing(initialText, mathExampleText, macros)
+module Strings exposing (initialText, mathExampleText, macros)
 
 
-macros = 
-    """"
+macros =
+    """
 \\newcommand{\\bra}{\\langle}
 \\newcommand{\\ket}{\\rangle}
 
@@ -10,6 +10,7 @@ macros =
 \\newcommand{\\sett}[2]{\\{\\ #1 \\ |\\ #2 \\}}
 \\newcommand{\\id}{\\mathbb{\\,I\\,}}
 """
+
 
 initialText =
     """
@@ -30,37 +31,37 @@ initialText =
 \\begin{comment}
 This multi-line comment
 should also not
-be visible in the 
+be visible in the
 rendered text.
 \\end{comment}
 
 
 \\tableofcontents
 
-\\section{Introduction} 
+\\section{Introduction}
 
-MiniLatex is a subset of LaTeX that can be 
-rendered live in the browser. Feel free to 
-experiment with MiniLatex using this app 
+MiniLatex is a subset of LaTeX that can be
+rendered live in the browser. Feel free to
+experiment with MiniLatex using this app
 \\mdash you can change the text in the
-left-hand window, or clear it and enter 
+left-hand window, or clear it and enter
 your own text.
 
-MiniLatex is still a research project, albeit 
-advancing rapidly.  I need your feedback to make 
-it better: jxxcarlson at gmail.  See \\cite{H}, 
-\\cite{T} below for articles on the design of 
-MiniLatex.  The source code is at \\cite{S}.  
-We are using an experimental version of the 
-code here that will be released in the 
+MiniLatex is still a research project, albeit
+advancing rapidly.  I need your feedback to make
+it better: jxxcarlson at gmail.  See \\cite{H},
+\\cite{T} below for articles on the design of
+MiniLatex.  The source code is at \\cite{S}.
+We are using an experimental version of the
+code here that will be released in the
 Fall of 2018.
 
-For a searchable repository of MiniLatex documents, 
-see \\href{https://knode.io}{knode.io}.  
-You can create, edit, and disseminate documents 
-using \\strong{knode}.  For an example of a long 
-MiniLatex document, see 
-\\href{https://www.knode.io/424}{QF Notes} 
+For a searchable repository of MiniLatex documents,
+see \\href{https://knode.io}{knode.io}.
+You can create, edit, and disseminate documents
+using \\strong{knode}.  For an example of a long
+MiniLatex document, see
+\\href{https://www.knode.io/424}{QF Notes}
 \\mdash then click on the title.
 \\section{Formulas}
 
@@ -80,29 +81,51 @@ An improper integral:
 \\int_0^\\infty e^{-x} dx = 1
 \\end{equation}
 
+\\section{Commutative diagrams}
+
+$\\require{\\AMScd}$
+
+$$
+\\begin{CD}
+A @<<< B @>>> C\\\\
+@. @| @AAA\\\\
+@. D @= E
+\\end{CD}
+$$
+
+$$
+\\begin{CD}
+K(X) @>{ch}>> H(X;\\mathbb Q)\\\\
+@VVV @VVV \\\\
+K(Y) @>{ch}>> H(Y;\\mathbb Q)
+\\end{CD}
+$$
+
+
+
 \\section{Math-mode Macros}
 
-A little Dirac notation \\cite{D} from quantum mechanics: 
+A little Dirac notation \\cite{D} from quantum mechanics:
 
 $$
   \\bra x | y \\ket = \\bra y | x \\ket.
 $$
 
-The \\strong{bra} and \\strong{ket} macros are defined 
-in the panel on the right.  You can always define and 
+The \\strong{bra} and \\strong{ket} macros are defined
+in the panel on the right.  You can always define and
 use math-mode macros in MiniLatex.
 
-More macros \\mdash see the right-hand panel for their 
+More macros \\mdash see the right-hand panel for their
 definitions:
 
 $A = \\set{a \\in Z, a \\equiv 1\\ mod\\ 2}$
 
 $B = \\sett{a,b,c}{a,b,c \\in Z}$
 
-Note that you can easily write 
-about Tex in MiniLatex.  
-Thus the  \\code{\\backslash{bra }} 
-macro is defined as 
+Note that you can easily write
+about Tex in MiniLatex.
+Thus the  \\code{\\backslash{bra }}
+macro is defined as
 \\code{\\backslash{newcommand}\\texarg{\\backslash{bra}}\\texarg{\\backslash{langle}}}.
 
 \\section{Text-mode Macros}
@@ -122,7 +145,7 @@ For example, if we add the text
 \\newcommand{\\boss}{Phineas Fogg}
 \\end{verbatim}
 
-then saying 
+then saying
 
 \\begin{verbatim}
 \\italic{My boss is \\boss.}
@@ -139,10 +162,10 @@ then the macro \\backslash{hello}\\texarg{John} renders as \\hello{John}
 For one more example,  make the definition
 
 \\begin{verbatim}
-\\newcommand{\\reverseconcat}[3]{#3#2#1} 
+\\newcommand{\\reverseconcat}[3]{#3#2#1}
 \\end{verbatim}
 
-\\newcommand{\\reverseconcat}[3]{#3#2#1} 
+\\newcommand{\\reverseconcat}[3]{#3#2#1}
 
 Then \\backslash{reverseconcat}\\texarg{A}\\texarg{B}\\texarg{C} = \\reverseconcat{A}{B}{C}
 
@@ -153,9 +176,9 @@ We also plan to add a feature so that authors can define new environments.
 
 \\section{MiniLatex Macros}
 
-MiniLatex has a number of macros of its own,  For 
-example, text can be rendered in various colors, \\red{such as red} 
-and \\blue{blue}. Text can \\highlight{be highlighted} 
+MiniLatex has a number of macros of its own,  For
+example, text can be rendered in various colors, \\red{such as red}
+and \\blue{blue}. Text can \\highlight{be highlighted}
 and can \\strike{also be struck}. Here are the macros:
 
 \\begin{verbatim}
@@ -168,12 +191,12 @@ and can \\strike{also be struck}. Here are the macros:
 
 \\section{Theorems}
 
-\\begin{theorem} 
+\\begin{theorem}
 There are infinitely many prime numbers.
 \\end{theorem}
 
-\\begin{theorem} 
-There are infinitley many prime numbers 
+\\begin{theorem}
+There are infinitley many prime numbers
 $p$ such that $p \\equiv 1\\ mod\\ 4$.
 \\end{theorem}
 
@@ -195,14 +218,14 @@ A list
 
 \\item Items can be nested
 
-\\item And you can do this: 
+\\item And you can do this:
 $ \\frac{1}{1 + \\frac{2}{3}} $
 
 \\end{itemize}
 
 \\end{itemize}
 
-A table 
+A table
 
 \\begin{indent}
 \\strong{Light Elements}
@@ -221,7 +244,7 @@ Beryllium& Be& 4& 9.012 \\\\
 Pythagoras is said to have said that $z^2 + b^2 = c^2
 
 Errors, as illustrated above, are rendered in real time and are reported in red, in place. Compare
-with the source text on the left. 
+with the source text on the left.
 
 We plan to make error reporting still better, giving detailed context.  Note, by the way, what happens when a nonexistent macro like \\italic{hohoho } is used:
 
@@ -240,7 +263,7 @@ This default treatment of unkown environments is also intentional, and can even 
 \\section{Technology}
 
 MiniLatex is written in \\href{http://elm-lang.org}{Elm}, the statically typed functional
-programming language created by Evan Czaplicki.  Because of its excellent 
+programming language created by Evan Czaplicki.  Because of its excellent
 \\href{http://package.elm-lang.org/packages/elm-tools/parser/latest}{parser combinator library}, Elm is an ideal choice for a project like the present one.
 
 
@@ -293,11 +316,11 @@ that Dirac introduced and which abound in the physics literature.
 
 \\subsection{The basics}
 
-For the inner product of two vectors, we write $\\bra u | v \\ket$, where this expression is linear in the second variable and conjugate linear in the first.  Thus Dirac's $\\bra u | v \\ket$ is the mathematicians's $\\bra v, w \\ket$.  
+For the inner product of two vectors, we write $\\bra u | v \\ket$, where this expression is linear in the second variable and conjugate linear in the first.  Thus Dirac's $\\bra u | v \\ket$ is the mathematicians's $\\bra v, w \\ket$.
 
-In this notations, $\\bra u | c v\\ket = c\\bra u | v \\ket$, but $\\bra cu |  v\\ket = \\bar c\\bra u | v \\ket$. The symmetry condition reads $\\bra v | u \\ket = \\overline{\\bra u  | v \\ket}$.  
+In this notations, $\\bra u | c v\\ket = c\\bra u | v \\ket$, but $\\bra cu |  v\\ket = \\bar c\\bra u | v \\ket$. The symmetry condition reads $\\bra v | u \\ket = \\overline{\\bra u  | v \\ket}$.
 
-Let $A$ be an operator.  The expression $\\bra u | A | v \\ket$ means $\\bra u | Av \\ket$.  Thus it is the same as $\\bra A^*u | v \\ket$.  
+Let $A$ be an operator.  The expression $\\bra u | A | v \\ket$ means $\\bra u | Av \\ket$.  Thus it is the same as $\\bra A^*u | v \\ket$.
 
 The symbol $|v\\ket$ has the same meaning as $v$ if $v$ is a vector. Such vectors are called \\term{kets}.  Let $\\set{ \\psi_a }$ be a set of states, that is, eigenvectors for an operator $A$ with eigenvalue $a$.  The notations $\\psi_a$, $|\\psi_a \\ket$, and  $|a\\ket$ all stand fors the same thing.  It makes sense to say
 
@@ -340,10 +363,10 @@ Let $\\set{ |v_n\\ket} = \\set{ |n\\ket}$ be a complete orthonormal set for $H$ 
 That is, the expression on the left, which is a sum of projections operators, is the identity operator $\\id$.  We say that the left-hand side of \\eqref{resolutionofidentity} is  \\term{resolution of the identity}.  The proof that  \\eqref{resolutionofidentity} holds an exercise in bra-ket formalism. Let $v$ be arbitrary and write
 
 \\begin{equation}
-  v = \\sum_m | m \\ket\\bra m | v \\ket 
+  v = \\sum_m | m \\ket\\bra m | v \\ket
 \\end{equation}
 
-This is the Fourier decomposition of $v$.  Note that it depends linearly on $| v \\ket$. Applying $\\sum | n \\ket\\bra n|$ to $v$, we find that 
+This is the Fourier decomposition of $v$.  Note that it depends linearly on $| v \\ket$. Applying $\\sum | n \\ket\\bra n|$ to $v$, we find that
 
 \\begin{align}
 \\left(\\sum_n  | n\\ket \\bra n |\\right) \\left(\\sum_m | m \\ket\\bra m | v \\ket \\right) &=
@@ -391,13 +414,13 @@ This is the same as the identity
 One also has resolution of the identity for operators with continuous spectrum.  Take, for example, the operator $-id/dx$ which has (generalized) eigenfunctions $e^{ikx}$. Writing $| k \\ket$ for $e^{ikx}$, one has
 
 \\begin{equation}
-\\id = \\frac{1}{2\\pi} \\int_{-\\infty}^\\infty dk\\, | k \\ket \\bra k |  
+\\id = \\frac{1}{2\\pi} \\int_{-\\infty}^\\infty dk\\, | k \\ket \\bra k |
 \\end{equation}
 
 Standing by itself, the meaning of this formula is a subtle matter.  However, when applied to a function, we have
 
 \\begin{equation}
-| f \\ket = \\frac{1}{2\\pi} \\int_{-\\infty}^\\infty dk\\, | k \\ket \\bra k | f \\ket 
+| f \\ket = \\frac{1}{2\\pi} \\int_{-\\infty}^\\infty dk\\, | k \\ket \\bra k | f \\ket
 \\end{equation}
 
 This is an encoding of the Fourier inversion theorem:

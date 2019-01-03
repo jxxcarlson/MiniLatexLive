@@ -1,4 +1,4 @@
-module Main exposing(main)
+module Main exposing (main)
 
 import Browser
 import Debounce exposing (Debounce)
@@ -12,7 +12,7 @@ import MiniLatex.MiniLatex as MiniLatex
 import Random
 import Task
 import Strings
-import Style exposing(..)
+import Style exposing (..)
 
 
 main : Program Flags (Model (Html Msg)) Msg
@@ -49,7 +49,6 @@ type Msg
     | ExampleText
 
 
-
 debounceConfig : Debounce.Config Msg
 debounceConfig =
     { strategy = Debounce.later 250
@@ -59,7 +58,6 @@ debounceConfig =
 
 type alias Flags =
     {}
-
 
 
 init : Flags -> ( Model (Html msg), Cmd Msg )
@@ -78,7 +76,7 @@ init flags =
             , seed = 0
             }
     in
-    ( model, Cmd.none )
+        ( model, Cmd.none )
 
 
 initialMacroText =
@@ -98,12 +96,12 @@ update msg model =
                 ( debounce, cmd ) =
                     Debounce.push debounceConfig str model.debounce
             in
-            ( { model
-                | sourceText = str
-                , debounce = debounce
-              }
-            , cmd
-            )
+                ( { model
+                    | sourceText = str
+                    , debounce = debounce
+                  }
+                , cmd
+                )
 
         GetMacroText str ->
             ( { model | macroText = str }, Cmd.none )
@@ -117,7 +115,7 @@ update msg model =
                         msg_
                         model.debounce
             in
-            ( { model | debounce = debounce }, cmd )
+                ( { model | debounce = debounce }, cmd )
 
         Render str ->
             let
@@ -127,13 +125,13 @@ update msg model =
                 newEditRecord =
                     MiniLatex.updateEditRecord model.seed model.editRecord (prependMacros model.macroText str)
             in
-            ( { model
-                | editRecord = newEditRecord
-                , renderedText = renderFromEditRecord model.counter newEditRecord
-                , counter = model.counter + 1
-              }
-            , Random.generate NewSeed (Random.int 1 10000)
-            )
+                ( { model
+                    | editRecord = newEditRecord
+                    , renderedText = renderFromEditRecord model.counter newEditRecord
+                    , counter = model.counter + 1
+                  }
+                , Random.generate NewSeed (Random.int 1 10000)
+                )
 
         GenerateSeed ->
             ( model, Random.generate NewSeed (Random.int 1 10000) )
@@ -146,55 +144,55 @@ update msg model =
                 editRecord =
                     MiniLatex.initializeEditRecord 0 ""
             in
-            ( { model
-                | sourceText = ""
-                , editRecord = editRecord
-                , renderedText = renderFromEditRecord model.counter editRecord
-                , counter = model.counter + 1
-              }
-            , Cmd.none
-            )
+                ( { model
+                    | sourceText = ""
+                    , editRecord = editRecord
+                    , renderedText = renderFromEditRecord model.counter editRecord
+                    , counter = model.counter + 1
+                  }
+                , Cmd.none
+                )
 
         FullRender ->
             let
                 editRecord =
                     MiniLatex.initializeEditRecord model.seed (prependMacros model.macroText model.sourceText)
             in
-            ( { model
-                | counter = model.counter + 1
-                , editRecord = editRecord
-                , renderedText = renderFromEditRecord model.counter editRecord
-              }
-            , Cmd.none
-            )
+                ( { model
+                    | counter = model.counter + 1
+                    , editRecord = editRecord
+                    , renderedText = renderFromEditRecord model.counter editRecord
+                  }
+                , Cmd.none
+                )
 
         RestoreText ->
             let
                 editRecord =
                     MiniLatex.initializeEditRecord model.seed (prependMacros initialMacroText Strings.initialText)
             in
-            ( { model
-                | counter = model.counter + 1
-                , editRecord = editRecord
-                , sourceText = Strings.initialText
-                , renderedText = renderFromEditRecord model.counter editRecord
-              }
-            , Cmd.none
-            )
+                ( { model
+                    | counter = model.counter + 1
+                    , editRecord = editRecord
+                    , sourceText = Strings.initialText
+                    , renderedText = renderFromEditRecord model.counter editRecord
+                  }
+                , Cmd.none
+                )
 
         ExampleText ->
             let
                 editRecord =
                     MiniLatex.initializeEditRecord model.seed (prependMacros initialMacroText Strings.mathExampleText)
             in
-            ( { model
-                | counter = model.counter + 1
-                , editRecord = editRecord
-                , sourceText = Strings.mathExampleText
-                , renderedText = renderFromEditRecord model.counter editRecord
-              }
-            , Cmd.none
-            )
+                ( { model
+                    | counter = model.counter + 1
+                    , editRecord = editRecord
+                    , sourceText = Strings.mathExampleText
+                    , renderedText = renderFromEditRecord model.counter editRecord
+                  }
+                , Cmd.none
+                )
 
 
 normalize : String -> String
@@ -204,11 +202,7 @@ normalize str =
 
 prependMacros : String -> String -> String
 prependMacros macros_ sourceText =
-    let
-        macros__ =
-            macros_ |> normalize
-    in
-    "$$\n" ++ macros__ ++ "\n$$\n\n" ++ sourceText
+    "$$\n" ++ (macros_ |> normalize) ++ "\n$$\n\n" ++ sourceText
 
 
 renderFromEditRecord : Int -> EditRecord (Html msg) -> Html msg
@@ -223,19 +217,20 @@ render_ str =
     Task.perform Render (Task.succeed str)
 
 
-
 render : String -> Html msg
 render sourceText =
     let
         macroDefinitions =
             initialMacroText
     in
-    MiniLatex.render macroDefinitions sourceText
+        MiniLatex.render macroDefinitions sourceText
+
 
 
 --
 -- VIEW FUNCTIONS
 ---
+
 
 view : Model (Html Msg) -> Html Msg
 view model =
@@ -287,7 +282,8 @@ renderedSource model =
         [ model.renderedText ]
 
 
--- 
+
+--
 -- BUTTONS
 --
 

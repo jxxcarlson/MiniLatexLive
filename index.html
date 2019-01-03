@@ -5,7 +5,7 @@
 		<meta name="viewport" content="width=device-width" />
 		<title>MiniLatex Live</title>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/custom-elements/1.1.1/custom-elements.min.js"></script>
-		
+
 		<script type="text/x-mathjax-config">
 			MathJax.Hub.Config(
 				{ tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
@@ -19,8 +19,8 @@
 				}
 	        );
 		</script>
-		
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 		<script src="Main.js" charset="utf-8"></script>
 		<style>
 .code {font-family: "Courier New", Courier, monospace; background-color: #f5f5f5; font-weight: 300;}
@@ -60,14 +60,14 @@ a:active { color: blue;}
 	</head>
 
 	<body>
-		
+
 		<div id="main"></div>
 
  	<script>
 
 		var root = document.getElementById('main');
 		var app = Elm.Main.init({node: root, flags:  { width:  1200, height: 900 }});
-		
+
 		var typesetTimeout = null
 		var typesetQueue = []
 		function enqueueTypeset(el) {
@@ -83,7 +83,7 @@ a:active { color: blue;}
 				typesetQueue = []
 			}, 1)
 		}
-		
+
 		var updateQueue = []
 		var updateTimeout = null
 		function enqueueUpdate(el) {
@@ -95,18 +95,18 @@ a:active { color: blue;}
 				updateQueue = []
 			}, 0)
 		}
-		
+
 		customElements.define('math-text', class extends HTMLElement {
 		  constructor() {
 			super()
 			this._content = this.content
 		  }
-		  
+
 			get content() {
 				// console.log("get content: " + this._content)
 				return this._content
 			}
-		
+
 			set content(value) {
 				// console.log("set content: " + value)
 				if (this._content === value) return
@@ -116,7 +116,7 @@ a:active { color: blue;}
 				jaxScript.textContent = this._content
 				enqueueUpdate(this)
 			}
-		
+
 			connectedCallback() {
 				// console.log("connectedCallback: " + this._content )
 				this.textContent = this._content
