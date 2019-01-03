@@ -15,6 +15,9 @@ macros =
 initialText =
     """
 
+$\\require{\\AMScd}$
+
+$\\require{\\mhchem}$
 
 
 \\title{MiniLatex Live}
@@ -92,7 +95,6 @@ $\\require{\\AMScd}$
 
 Then we proceed as usual to write these:
 
-$\\require{\\AMScd}$
 
 $$
 \\begin{CD}
@@ -110,6 +112,33 @@ K(Y) @>{ch}>> H(Y;\\mathbb Q)
 \\end{CD}
 $$
 
+\\section{Chemistry}
+
+With the \\code{mchem} package, you
+can write chemical formulas.  First say this:
+
+\\begin{verbatim}
+$\\require{\\mchem}$
+\\end{verbatim}
+
+Then proceed as usual:
+
+
+
+
+$\\ce{H2O}$
+
+$\\ce{CO2 + C -> 2 CO}$
+
+$\\ce{SO4^2-}$
+
+$\\ce{(NH4)2S}$
+
+$\\ce{^{227}_{90}Th+}$
+
+$\\ce{C6H5-CHO}$
+
+$\\ce{SO4^2- + Ba^2+ -> BaSO4 v}$
 
 
 \\section{Math-mode Macros}
@@ -298,7 +327,6 @@ Briefly, \\href{https://www.mathjax.org/}{MathJax} is used inside dollar signs, 
 \\bibitem{T} James Carlson, \\href{https://knode.io/525}{MiniLatex Technical Report}
 
 \\end{thebibliography}
-
 
 
 
