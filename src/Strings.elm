@@ -83,6 +83,15 @@ An improper integral:
 
 \\section{Commutative diagrams}
 
+For commutative diagrams, use the AMScd
+package, so we first say this:
+
+\\begin{verbatim}
+$\\require{\\AMScd}$
+\\end{verbatim}
+
+Then we proceed as usual to write these:
+
 $\\require{\\AMScd}$
 
 $$
