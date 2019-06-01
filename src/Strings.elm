@@ -20,7 +20,7 @@ $\\require{\\AMScd}$
 $\\require{\\mhchem}$
 
 
-\\title{MiniLatex Live}
+\\title{MiniLatex Demo}
 % \\author{James Carlson}
 % \\email{jxxcarlson@gmail.com}
 % \\date{August 5, 2018}s

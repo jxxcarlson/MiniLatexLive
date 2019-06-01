@@ -242,7 +242,7 @@ view model =
 display : Model (Html Msg) -> Html Msg
 display model =
     div []
-        [ h1 [ style "margin-left" "20px" ] [ text "MiniLatex Live" ]
+        [ h1 [ style "margin-left" "20px" ] [ text "MiniLatex Demo" ]
         , p [ style "margin-left" "20px", style "font-style" "italic" ]
             [ text "This app is a demo of the ongoing MiniLatex research project."
             , br [] []
