@@ -13,6 +13,6 @@ echo "${color}Copying to 138.197.81.6${reset}"
 scp -r index-remote.html  root@138.197.81.6:/var/www/demo.minilatex.app/html/index.html
 scp -r Main.min.js  root@138.197.81.6:/var/www/demo.minilatex.app/html/
 scp -r assets/style.css  root@138.197.81.6:/var/www/demo.minilatex.app/html/assets/
-scp -r assets/custom-element-config.css  root@138.197.81.6:/var/www/demo.minilatex.app/html/assets/
-scp -r assets/math-text.css  root@138.197.81.6:/var/www/demo.minilatex.app/html/assets/
+scp -r assets/custom-element-config.js  root@138.197.81.6:/var/www/demo.minilatex.app/html/assets/
+scp -r assets/math-text.js  root@138.197.81.6:/var/www/demo.minilatex.app/html/assets/
 
