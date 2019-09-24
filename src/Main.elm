@@ -5,15 +5,15 @@ import Debounce exposing (Debounce)
 import Html exposing (..)
 import Html.Attributes as HA exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Html.Keyed as Keyed
-import Json.Encode
 import MiniLatex.Differ exposing (EditRecord)
 import MiniLatex.MiniLatex as MiniLatex
 import Random
 import Task
-import Strings
+import StringsV1
+import StringsV2
 import Style exposing (..)
 
+initialText = StringsV2.initialText
 
 main : Program Flags (Model (Html Msg)) Msg
 main =
@@ -64,12 +64,12 @@ init : Flags -> ( Model (Html msg), Cmd Msg )
 init flags =
     let
         editRecord =
-            MiniLatex.initializeEditRecord 0 Strings.initialText
+            MiniLatex.initializeEditRecord 0 initialText
 
         model =
-            { sourceText = Strings.initialText
+            { sourceText = initialText
             , macroText = initialMacroText
-            , renderedText = render (prependMacros initialMacroText Strings.initialText)
+            , renderedText = render (prependMacros initialMacroText initialText)
             , editRecord = editRecord
             , debounce = Debounce.init
             , counter = 0
@@ -80,7 +80,7 @@ init flags =
 
 
 initialMacroText =
-    normalize Strings.macros
+    normalize StringsV1.macros
 
 
 subscriptions : Model (Html msg) -> Sub Msg
@@ -169,12 +169,12 @@ update msg model =
         RestoreText ->
             let
                 editRecord =
-                    MiniLatex.initializeEditRecord model.seed (prependMacros initialMacroText Strings.initialText)
+                    MiniLatex.initializeEditRecord model.seed (prependMacros initialMacroText initialText)
             in
                 ( { model
                     | counter = model.counter + 1
                     , editRecord = editRecord
-                    , sourceText = Strings.initialText
+                    , sourceText = initialText
                     , renderedText = renderFromEditRecord model.counter editRecord
                   }
                 , Cmd.none
@@ -183,12 +183,12 @@ update msg model =
         ExampleText ->
             let
                 editRecord =
-                    MiniLatex.initializeEditRecord model.seed (prependMacros initialMacroText Strings.mathExampleText)
+                    MiniLatex.initializeEditRecord model.seed (prependMacros initialMacroText StringsV1.mathExampleText)
             in
                 ( { model
                     | counter = model.counter + 1
                     , editRecord = editRecord
-                    , sourceText = Strings.mathExampleText
+                    , sourceText = StringsV1.mathExampleText
                     , renderedText = renderFromEditRecord model.counter editRecord
                   }
                 , Cmd.none
@@ -241,22 +241,21 @@ view model =
 
 display : Model (Html Msg) -> Html Msg
 display model =
-    div []
+    div [ ]
         [ h1 [ style "margin-left" "20px" ] [ text "MiniLatex Demo" ]
-        , p [ style "margin-left" "20px", style "font-style" "italic" ]
-            [ text "This app is a demo of the ongoing MiniLatex research project."
-            , br [] []
-            , text "See "
-            , a [ href "https://knode.io", target "_blank" ] [ text "knode.io" ]
-            , text " for a more substantial use of this technology."
-            ]
         , label "Edit or write new LaTeX below. It will be rendered in real time."
         , editor model
-        , renderedSource model
-        , macroPanel model
-        , p [ style "clear" "left", style "margin-left" "20px", style "margin-top" "-20px" ] [ clearButton 60, restoreTextButton 80, exampleButton 80, fullRenderButton 100 ]
-        ]
+        , div [style "float" "left"] [renderedSource model]
+        -- , macroPanel model
+--        , p [ style "margin-left" "20px", style "font-style" "italic" ]
+--                    [ text "This app is a demo of the ongoing MiniLatex research project."
+--                    , br [] []
+--                    , text "See "
+--                    , a [ href "https://knode.io", target "_blank" ] [ text "knode.io" ]
+--                    , text " for a more substantial use of this technology."
+--                    ]]
 
+   ]
 
 label text_ =
     p labelStyle [ text text_ ]
@@ -264,7 +263,10 @@ label text_ =
 
 editor : Model (Html msg) -> Html Msg
 editor model =
-    textarea (editorTextStyle ++ [ onInput GetContent, value model.sourceText ]) []
+    div [] [
+       textarea (editorTextStyle ++ [ onInput GetContent, value model.sourceText ]) []
+      , p [ style "clear" "left", style "margin-left" "20px", style "margin-top" "-20px" ] [ clearButton 60, restoreTextButton 80, fullRenderButton 100 ]
+   ]
 
 
 macroPanel : Model (Html msg) -> Html Msg
@@ -297,7 +299,7 @@ fullRenderButton width =
 
 
 restoreTextButton width =
-    button ([ onClick RestoreText ] ++ buttonStyle colorBlue width) [ text "Example 1" ]
+    button ([ onClick RestoreText ] ++ buttonStyle colorBlue width) [ text "Restore" ]
 
 
 exampleButton width =

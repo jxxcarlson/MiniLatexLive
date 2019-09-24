@@ -51,7 +51,7 @@ outerStyle =
 
 
 editorTextStyle =
-    textStyle "400px" "450px" "#fff"
+    textStyle "400px" "450px" "#fff" ++ [style "float" "left"]
 
 
 macroPanelStyle =
@@ -59,7 +59,7 @@ macroPanelStyle =
 
 
 renderedSourceStyle =
-    textStyle "400px" "450px" "#fff"
+    textStyle "400px" "520px" "#fff" ++ [style "float" "left"]
 
 
 textStyle width height color =

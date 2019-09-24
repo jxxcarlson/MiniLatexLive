@@ -1,24 +1,25 @@
-module Strings exposing (initialText, mathExampleText, macros)
+module StringsV2 exposing (initialText, mathExampleText, macros)
 
 
-macros =
+macros = ""
+
+macros2 =
     """
+$$
 \\newcommand{\\bra}{\\langle}
 \\newcommand{\\ket}{\\rangle}
 
 \\newcommand{\\set}[1]{\\{\\ #1 \\ \\}}
 \\newcommand{\\sett}[2]{\\{\\ #1 \\ |\\ #2 \\}}
 \\newcommand{\\id}{\\mathbb{\\,I\\,}}
+$$
 """
+
+
 
 
 initialText =
     """
-
-$\\require{\\AMScd}$
-
-$\\require{\\mhchem}$
-
 
 \\title{MiniLatex Demo}
 % \\author{James Carlson}
@@ -40,6 +41,11 @@ rendered text.
 
 
 \\tableofcontents
+
+\\strong{Note.} This version of the MiniLaTeX demo uses MathJax 3,
+which both is much faster than the 2.7.* versions.  There is one
+temporary downside \\mdash some more work needs to be done
+to enable math-mode macros.  Coming soon!
 
 \\section{Introduction}
 
@@ -84,87 +90,6 @@ An improper integral:
 \\int_0^\\infty e^{-x} dx = 1
 \\end{equation}
 
-\\section{Commutative diagrams}
-
-For commutative diagrams, use the AMScd
-package, so we first say this:
-
-\\begin{verbatim}
-$\\require{\\AMScd}$
-\\end{verbatim}
-
-Then we proceed as usual to write these:
-
-
-$$
-\\begin{CD}
-A @<<< B @>>> C\\\\
-@. @| @AAA\\\\
-@. D @= E
-\\end{CD}
-$$
-
-$$
-\\begin{CD}
-K(X) @>{ch}>> H(X;\\mathbb Q)\\\\
-@VVV @VVV \\\\
-K(Y) @>{ch}>> H(Y;\\mathbb Q)
-\\end{CD}
-$$
-
-\\section{Chemistry}
-
-With the \\code{mchem} package, you
-can write chemical formulas.  First say this:
-
-\\begin{verbatim}
-$\\require{\\mchem}$
-\\end{verbatim}
-
-Then proceed as usual:
-
-
-
-
-$\\ce{H2O}$
-
-$\\ce{CO2 + C -> 2 CO}$
-
-$\\ce{SO4^2-}$
-
-$\\ce{(NH4)2S}$
-
-$\\ce{^{227}_{90}Th+}$
-
-$\\ce{C6H5-CHO}$
-
-$\\ce{SO4^2- + Ba^2+ -> BaSO4 v}$
-
-
-\\section{Math-mode Macros}
-
-A little Dirac notation \\cite{D} from quantum mechanics:
-
-$$
-  \\bra x | y \\ket = \\bra y | x \\ket.
-$$
-
-The \\strong{bra} and \\strong{ket} macros are defined
-in the panel on the right.  You can always define and
-use math-mode macros in MiniLatex.
-
-More macros \\mdash see the right-hand panel for their
-definitions:
-
-$A = \\set{a \\in Z, a \\equiv 1\\ mod\\ 2}$
-
-$B = \\sett{a,b,c}{a,b,c \\in Z}$
-
-Note that you can easily write
-about Tex in MiniLatex.
-Thus the  \\code{\\backslash{bra }}
-macro is defined as
-\\code{\\backslash{newcommand}\\texarg{\\backslash{bra}}\\texarg{\\backslash{langle}}}.
 
 \\section{Text-mode Macros}
 
