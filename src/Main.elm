@@ -234,10 +234,22 @@ render sourceText =
 
 view : Model (Html Msg) -> Html Msg
 view model =
-    div outerStyle
-        [ display model
+    div (outerStyle ++ [HA.class "container"])
+        [ lhs model, renderedSource model
         ]
 
+
+
+lhs model =
+    div [HA.class "lhs"] [
+        h1 [ style "margin-left" "20px" ] [ text "MiniLatex Demo" ]
+      , label "Edit or write new LaTeX below. It will be rendered in real time."
+      , editor model
+      , p [ style "margin-left" "20px", style "font-style" "italic" ]
+                            [ text "For more information about MiniLaTeX, please go to  "
+                            , a [ href "https://minilatex.io", target "_blank" ] [ text "minilatex.io" ]
+                            ]
+    ]
 
 display : Model (Html Msg) -> Html Msg
 display model =
@@ -245,7 +257,7 @@ display model =
         [ h1 [ style "margin-left" "20px" ] [ text "MiniLatex Demo" ]
         , label "Edit or write new LaTeX below. It will be rendered in real time."
         , editor model
-        , div [style "float" "left"] [renderedSource model]
+        , div [] [renderedSource model]
         -- , macroPanel model
 --        , p [ style "margin-left" "20px", style "font-style" "italic" ]
 --                    [ text "This app is a demo of the ongoing MiniLatex research project."
@@ -280,7 +292,7 @@ macroPanel model =
 
 renderedSource : Model (Html msg) -> Html msg
 renderedSource model =
-    Html.div renderedSourceStyle
+    Html.div (renderedSourceStyle ++ [HA.class "rhs"])
         [ model.renderedText ]
 
 

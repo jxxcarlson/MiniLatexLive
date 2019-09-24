@@ -21,7 +21,7 @@ $$
 initialText =
     """
 
-\\title{MiniLatex Demo}
+\\title{Sample MiniLaTeX Doc}
 % \\author{James Carlson}
 % \\email{jxxcarlson@gmail.com}
 % \\date{August 5, 2018}s
@@ -43,36 +43,36 @@ rendered text.
 \\tableofcontents
 
 \\strong{Note.} This version of the MiniLaTeX demo uses MathJax 3,
-which both is much faster than the 2.7.* versions.  There is one
+which is much faster than the 2.7.* versions and which gives
+a much better experience when doing live editing.  There is one
 temporary downside \\mdash some more work needs to be done
 to enable math-mode macros.  Coming soon!
 
 \\section{Introduction}
 
 MiniLatex is a subset of LaTeX that can be
-rendered live in the browser. Feel free to
+rendered live in the browser using a custom parser.
+Mathematical text is rendered by \\href{https://mathjax.org}{MathJax}:
+
+$$
+\\int_{-\\infty}^\\infty e^{-x^2} dx = \\pi
+$$
+
+The combination of MiniLaTeX and MathJax
+gives you access to both text-mode
+and math-mode LaTeX in the browser.
+
+
+Feel free to
 experiment with MiniLatex using this app
 \\mdash you can change the text in the
 left-hand window, or clear it and enter
-your own text.
+your own text. For more information about
+the MiniLaTeX project, please go to
+\\href{https://minilatex.io}{minilatex.io},
+or write to jxxcarlson at gmail.
 
-MiniLatex is still a research project, albeit
-advancing rapidly.  I need your feedback to make
-it better: jxxcarlson at gmail.  See \\cite{H},
-\\cite{T} below for articles on the design of
-MiniLatex.  The source code is at \\cite{S}.
-We are using an experimental version of the
-code here that will be released in the
-Fall of 2018.
 
-For a searchable repository of MiniLatex documents,
-see \\href{https://knode.io}{knode.io}.
-You can create, edit, and disseminate documents
-using \\strong{knode}.  For an example of a long
-MiniLatex document, see
-\\href{https://www.knode.io/424}{QF Notes}
-\\mdash then click on the title.
-\\section{Formulas}
 
 \\italic{Try editing formula \\eqref{integral:xn} or \\eqref{integral:exp} below.}
 
@@ -95,11 +95,8 @@ An improper integral:
 
 \\newcommand{\\hello}[1]{Hello \\strong{#1}!}
 
-
-
-
-We have added an experimental macro expansion feature that permits
-the author to define new text-mode macros in a MiniLatex document.
+As illustrated by the examples below, one can define new text-mode macros
+in MiniLaTeX.
 For example, if we add the text
 
 \\newcommand{\\boss}{Phineas Fogg}

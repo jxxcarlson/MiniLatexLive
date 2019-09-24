@@ -6,3 +6,4 @@ deploy.sh
 elm
 foo.html
 .idea/
+Main.min.js
