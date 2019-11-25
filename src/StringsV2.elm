@@ -1,7 +1,38 @@
 module StringsV2 exposing (initialText, mathExampleText, macros)
 
 
-macros = ""
+macros =
+        """
+\\def\\half{\\small\\frac{1}{2}}
+\\def\\bbR{\\mathbb{R}}
+\\def\\caA{\\mathcal{A}}
+\\def\\caC{\\mathcal{C}}
+\\def\\caD{\\mathcal{D}}
+\\def\\caF{\\mathcal{F}}
+\\def\\caL{\\mathcal{L}}
+\\def\\caP{\\mathcal{P}}
+\\def\\UUU{\\mathcal{U}}
+\\def\\FFF{\\mathcal{F}}
+\\def\\ZZ{\\mathbb{Z}}
+\\def\\UU{\\mathbb{U}}
+\\def\\CC{\\mathbb{C}}
+\\newcommand{\\boa}{\\mathbf{a}}
+\\newcommand{\\boi}{\\mathbf{i}}
+\\newcommand{\\bop}{\\mathbf{p}}
+\\newcommand{\\boF}{\\mathbf{F}}
+\\newcommand{\\boL}{\\mathbf{L}}
+\\newcommand{\\bor}{\\mathbf r }
+\\newcommand{\\boR}{{\\bf R}}
+\\newcommand{\\bov}{\\mathbf v }
+\\newcommand{\\sinc}{\\,\\text{sinc}\\,}
+\\newcommand{\\bra}{\\langle}
+\\newcommand{\\ket}{\\rangle}
+\\newcommand{\\set}[1]{\\{#1\\}}
+\\newcommand{\\sett}[2]{\\{ #1 | #2 \\}}
+\\def\\card{{\\bf card}\\; }
+\\def\\id{\\mathbf{1}}
+"""
+
 
 macros2 =
     """
@@ -39,6 +70,7 @@ be visible in the
 rendered text.
 \\end{comment}
 
+$$\\boa = \\caA^4$$
 
 \\tableofcontents
 
