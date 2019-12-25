@@ -5,15 +5,18 @@ import Debounce exposing (Debounce)
 import Html exposing (..)
 import Html.Attributes as HA exposing (..)
 import Html.Events exposing (onClick, onInput)
-import MiniLatex.Differ exposing (EditRecord)
-import MiniLatex.MiniLatex as MiniLatex
+import MiniLatex
+import MiniLatex.Edit exposing (Data)
 import Random
-import Task
 import StringsV1
 import StringsV2
 import Style exposing (..)
+import Task
 
-initialText = StringsV2.initialText
+
+initialText =
+    StringsV2.initialText
+
 
 main : Program Flags (Model (Html Msg)) Msg
 main =
@@ -29,7 +32,7 @@ type alias Model a =
     { sourceText : String
     , renderedText : a
     , macroText : String
-    , editRecord : EditRecord a
+    , editRecord : Data a
     , debounce : Debounce String
     , counter : Int
     , seed : Int
@@ -64,7 +67,7 @@ init : Flags -> ( Model (Html msg), Cmd Msg )
 init flags =
     let
         editRecord =
-            MiniLatex.initializeEditRecord 0 initialText
+            MiniLatex.Edit.init 0 initialText
 
         model =
             { sourceText = initialText
@@ -76,7 +79,7 @@ init flags =
             , seed = 0
             }
     in
-        ( model, Cmd.none )
+    ( model, Cmd.none )
 
 
 initialMacroText =
@@ -96,12 +99,12 @@ update msg model =
                 ( debounce, cmd ) =
                     Debounce.push debounceConfig str model.debounce
             in
-                ( { model
-                    | sourceText = str
-                    , debounce = debounce
-                  }
-                , cmd
-                )
+            ( { model
+                | sourceText = str
+                , debounce = debounce
+              }
+            , cmd
+            )
 
         GetMacroText str ->
             ( { model | macroText = str }, Cmd.none )
@@ -115,7 +118,7 @@ update msg model =
                         msg_
                         model.debounce
             in
-                ( { model | debounce = debounce }, cmd )
+            ( { model | debounce = debounce }, cmd )
 
         Render str ->
             let
@@ -123,15 +126,15 @@ update msg model =
                     String.fromInt model.counter
 
                 newEditRecord =
-                    MiniLatex.updateEditRecord model.seed model.editRecord (prependMacros model.macroText str)
+                    MiniLatex.Edit.update model.seed (prependMacros model.macroText str) model.editRecord
             in
-                ( { model
-                    | editRecord = newEditRecord
-                    , renderedText = renderFromEditRecord model.counter newEditRecord
-                    , counter = model.counter + 1
-                  }
-                , Random.generate NewSeed (Random.int 1 10000)
-                )
+            ( { model
+                | editRecord = newEditRecord
+                , renderedText = renderFromEditRecord model.counter newEditRecord
+                , counter = model.counter + 1
+              }
+            , Random.generate NewSeed (Random.int 1 10000)
+            )
 
         GenerateSeed ->
             ( model, Random.generate NewSeed (Random.int 1 10000) )
@@ -142,57 +145,57 @@ update msg model =
         Clear ->
             let
                 editRecord =
-                    MiniLatex.initializeEditRecord 0 ""
+                    MiniLatex.Edit.init 0 ""
             in
-                ( { model
-                    | sourceText = ""
-                    , editRecord = editRecord
-                    , renderedText = renderFromEditRecord model.counter editRecord
-                    , counter = model.counter + 1
-                  }
-                , Cmd.none
-                )
+            ( { model
+                | sourceText = ""
+                , editRecord = editRecord
+                , renderedText = renderFromEditRecord model.counter editRecord
+                , counter = model.counter + 1
+              }
+            , Cmd.none
+            )
 
         FullRender ->
             let
                 editRecord =
-                    MiniLatex.initializeEditRecord model.seed (prependMacros model.macroText model.sourceText)
+                    MiniLatex.Edit.init model.seed (prependMacros model.macroText model.sourceText)
             in
-                ( { model
-                    | counter = model.counter + 1
-                    , editRecord = editRecord
-                    , renderedText = renderFromEditRecord model.counter editRecord
-                  }
-                , Cmd.none
-                )
+            ( { model
+                | counter = model.counter + 1
+                , editRecord = editRecord
+                , renderedText = renderFromEditRecord model.counter editRecord
+              }
+            , Cmd.none
+            )
 
         RestoreText ->
             let
                 editRecord =
-                    MiniLatex.initializeEditRecord model.seed (prependMacros initialMacroText initialText)
+                    MiniLatex.Edit.init model.seed (prependMacros initialMacroText initialText)
             in
-                ( { model
-                    | counter = model.counter + 1
-                    , editRecord = editRecord
-                    , sourceText = initialText
-                    , renderedText = renderFromEditRecord model.counter editRecord
-                  }
-                , Cmd.none
-                )
+            ( { model
+                | counter = model.counter + 1
+                , editRecord = editRecord
+                , sourceText = initialText
+                , renderedText = renderFromEditRecord model.counter editRecord
+              }
+            , Cmd.none
+            )
 
         ExampleText ->
             let
                 editRecord =
-                    MiniLatex.initializeEditRecord model.seed (prependMacros initialMacroText StringsV1.mathExampleText)
+                    MiniLatex.Edit.init model.seed (prependMacros initialMacroText StringsV1.mathExampleText)
             in
-                ( { model
-                    | counter = model.counter + 1
-                    , editRecord = editRecord
-                    , sourceText = StringsV1.mathExampleText
-                    , renderedText = renderFromEditRecord model.counter editRecord
-                  }
-                , Cmd.none
-                )
+            ( { model
+                | counter = model.counter + 1
+                , editRecord = editRecord
+                , sourceText = StringsV1.mathExampleText
+                , renderedText = renderFromEditRecord model.counter editRecord
+              }
+            , Cmd.none
+            )
 
 
 normalize : String -> String
@@ -205,9 +208,9 @@ prependMacros macros_ sourceText =
     "$$\n" ++ (macros_ |> normalize) ++ "\n$$\n\n" ++ sourceText
 
 
-renderFromEditRecord : Int -> EditRecord (Html msg) -> Html msg
+renderFromEditRecord : Int -> Data (Html msg) -> Html msg
 renderFromEditRecord counter editRecord =
-    MiniLatex.getRenderedText editRecord
+    MiniLatex.Edit.get editRecord
         |> List.map (\x -> Html.div [ HA.style "margin-bottom" "0.65em" ] [ x ])
         |> Html.div []
 
@@ -223,7 +226,7 @@ render sourceText =
         macroDefinitions =
             initialMacroText
     in
-        MiniLatex.render macroDefinitions sourceText
+    MiniLatex.render macroDefinitions sourceText
 
 
 
@@ -234,40 +237,42 @@ render sourceText =
 
 view : Model (Html Msg) -> Html Msg
 view model =
-    div (outerStyle ++ [HA.class "container"])
-        [ lhs model, renderedSource model
+    div (outerStyle ++ [ HA.class "container" ])
+        [ lhs model
+        , renderedSource model
         ]
 
 
-
 lhs model =
-    div [HA.class "lhs"] [
-        h1 [ style "margin-left" "20px" ] [ text "MiniLatex Demo" ]
-      , label "Edit or write new LaTeX below. It will be rendered in real time."
-      , editor model
-      , p [ style "margin-left" "20px", style "font-style" "italic" ]
-                            [ text "For more information about MiniLaTeX, please go to  "
-                            , a [ href "https://minilatex.io", target "_blank" ] [ text "minilatex.io" ]
-                            ]
-    ]
-
-display : Model (Html Msg) -> Html Msg
-display model =
-    div [ ]
+    div [ HA.class "lhs" ]
         [ h1 [ style "margin-left" "20px" ] [ text "MiniLatex Demo" ]
         , label "Edit or write new LaTeX below. It will be rendered in real time."
         , editor model
-        , div [] [renderedSource model]
-        -- , macroPanel model
---        , p [ style "margin-left" "20px", style "font-style" "italic" ]
---                    [ text "This app is a demo of the ongoing MiniLatex research project."
---                    , br [] []
---                    , text "See "
---                    , a [ href "https://knode.io", target "_blank" ] [ text "knode.io" ]
---                    , text " for a more substantial use of this technology."
---                    ]]
+        , p [ style "margin-left" "20px", style "font-style" "italic" ]
+            [ text "For more information about MiniLaTeX, please go to  "
+            , a [ href "https://minilatex.io", target "_blank" ] [ text "minilatex.io" ]
+            ]
+        ]
 
-   ]
+
+display : Model (Html Msg) -> Html Msg
+display model =
+    div []
+        [ h1 [ style "margin-left" "20px" ] [ text "MiniLatex Demo" ]
+        , label "Edit or write new LaTeX below. It will be rendered in real time."
+        , editor model
+        , div [] [ renderedSource model ]
+
+        -- , macroPanel model
+        --        , p [ style "margin-left" "20px", style "font-style" "italic" ]
+        --                    [ text "This app is a demo of the ongoing MiniLatex research project."
+        --                    , br [] []
+        --                    , text "See "
+        --                    , a [ href "https://knode.io", target "_blank" ] [ text "knode.io" ]
+        --                    , text " for a more substantial use of this technology."
+        --                    ]]
+        ]
+
 
 label text_ =
     p labelStyle [ text text_ ]
@@ -275,10 +280,10 @@ label text_ =
 
 editor : Model (Html msg) -> Html Msg
 editor model =
-    div [] [
-       textarea (editorTextStyle ++ [ onInput GetContent, value model.sourceText ]) []
-      , p [ style "clear" "left", style "margin-left" "20px", style "margin-top" "-20px" ] [ clearButton 60, restoreTextButton 80, fullRenderButton 100 ]
-   ]
+    div []
+        [ textarea (editorTextStyle ++ [ onInput GetContent, value model.sourceText ]) []
+        , p [ style "clear" "left", style "margin-left" "20px", style "margin-top" "-20px" ] [ clearButton 60, restoreTextButton 80, fullRenderButton 100 ]
+        ]
 
 
 macroPanel : Model (Html msg) -> Html Msg
@@ -292,7 +297,7 @@ macroPanel model =
 
 renderedSource : Model (Html msg) -> Html msg
 renderedSource model =
-    Html.div (renderedSourceStyle ++ [HA.class "rhs"])
+    Html.div (renderedSourceStyle ++ [ HA.class "rhs" ])
         [ model.renderedText ]
 
 
