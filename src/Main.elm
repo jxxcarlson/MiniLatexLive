@@ -85,12 +85,11 @@ init flags =
             , debounce = Debounce.init
             , counter = 0
             , seed = 0
-            , editorBuffer = Buffer.init "Some text"
+            , editorBuffer = Buffer.init initialText
             , editorState = Editor.init config
             }
     in
     ( model, Cmd.none )
-
 
 config =
     { lines = 30
@@ -99,6 +98,20 @@ config =
     , wrapOption = DontWrap
     }
 
+
+editorConfig =
+    { editorMsg = EditorMsg
+    , sliderMsg = SliderMsg
+    , editorStyle = editorStyle
+    }
+
+
+editorStyle : List (Html.Attribute msg)
+editorStyle =
+    [ HA.style "background-color" "#dddddd"
+    , HA.style "border" "solid 0.5px"
+    , HA.style "width" "600px"
+    ]
 
 initialMacroText =
     normalize StringsV1.macros
@@ -119,13 +132,22 @@ update msg model =
             let
                 ( editor_, content, cmd ) =
                     Editor.update model.editorBuffer msg_ model.editorState
+
+                newSourceText = Buffer.toString content
+
+                ( debounce, cmd2 ) =
+                            Debounce.push debounceConfig newSourceText model.debounce
+
             in
             ( { model
                 | editorState = editor_
                 , editorBuffer = content
+                , sourceText = newSourceText
+                , debounce = debounce
               }
-            , Cmd.map EditorMsg cmd
+            , Cmd.batch [Cmd.map EditorMsg cmd, cmd2]
             )
+
 
         SliderMsg sliderMsg ->
           let
@@ -134,16 +156,7 @@ update msg model =
             ( { model | editorState = newEditorState }, cmd  |> Cmd.map SliderMsg )
 
         GetContent str ->
-            let
-                ( debounce, cmd ) =
-                    Debounce.push debounceConfig str model.debounce
-            in
-            ( { model
-                | sourceText = str
-                , debounce = debounce
-              }
-            , cmd
-            )
+            processNewContent model str
 
         GetMacroText str ->
             ( { model | macroText = str }, Cmd.none )
@@ -236,6 +249,17 @@ update msg model =
             , Cmd.none
             )
 
+processNewContent model str =
+    let
+       ( debounce, cmd ) =
+            Debounce.push debounceConfig str model.debounce
+    in
+    ( { model
+        | sourceText = str
+        , debounce = debounce
+      }
+    , cmd
+    )
 
 normalize : String -> String
 normalize str =
@@ -287,7 +311,7 @@ view model =
 
 
 lhs model =
-    div [ HA.class "lhs" ]
+    div [ HA.class "lhs", style "width" "600px" ]
         [ h1 [ style "margin-left" "20px" ] [ text "MiniLatex Demo" ]
         , label "Edit or write new LaTeX below. It will be rendered in real time."
         , Editor.embedded editorConfig model.editorState model.editorBuffer
@@ -298,20 +322,6 @@ lhs model =
         ]
 
 
-editorConfig =
-    { editorMsg = EditorMsg
-    , sliderMsg = SliderMsg
-    , editorStyle = editorStyle
-    }
-
-
-editorStyle : List (Html.Attribute msg)
-editorStyle =
-    [ HA.style "background-color" "#dddddd"
-    , HA.style "border" "solid 0.5px"
-    , HA.style "width" "600px"
-    ]
-
 
 display : Model (Html Msg) -> Html Msg
 display model =
@@ -320,15 +330,6 @@ display model =
         , label "Edit or write new LaTeX below. It will be rendered in real time."
         , editor model
         , div [] [ renderedSource model ]
-
-        -- , macroPanel model
-        --        , p [ style "margin-left" "20px", style "font-style" "italic" ]
-        --                    [ text "This app is a demo of the ongoing MiniLatex research project."
-        --                    , br [] []
-        --                    , text "See "
-        --                    , a [ href "https://knode.io", target "_blank" ] [ text "knode.io" ]
-        --                    , text " for a more substantial use of this technology."
-        --                    ]]
         ]
 
 
