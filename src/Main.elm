@@ -75,12 +75,12 @@ init : Flags -> ( Model (Html msg), Cmd Msg )
 init flags =
     let
         editRecord =
-            MiniLatex.Edit.init 0 initialText
+            MiniLatex.Edit.init True 0 initialText
 
         model =
             { sourceText = initialText
             , macroText = initialMacroText
-            , renderedText = render (prependMacros initialMacroText initialText)
+            , renderedText = render True (prependMacros initialMacroText initialText)
             , editRecord = editRecord
             , debounce = Debounce.init
             , counter = 0
@@ -94,7 +94,7 @@ init flags =
 config =
     { lines = 30
     , showInfoPanel = True
-    , wrapParams = { maximumWidth = 65, optimalWidth = 60, stringWidth = String.length }
+    , wrapParams = { maximumWidth = 55, optimalWidth = 50, stringWidth = String.length }
     , wrapOption = DontWrap
     }
 
@@ -178,7 +178,7 @@ update msg model =
                     String.fromInt model.counter
 
                 newEditRecord =
-                    MiniLatex.Edit.update model.seed (prependMacros model.macroText str) model.editRecord
+                    MiniLatex.Edit.update False model.seed (prependMacros model.macroText str) model.editRecord
             in
             ( { model
                 | editRecord = newEditRecord
@@ -197,7 +197,7 @@ update msg model =
         Clear ->
             let
                 editRecord =
-                    MiniLatex.Edit.init 0 ""
+                    MiniLatex.Edit.init True 0 ""
             in
             ( { model
                 | sourceText = ""
@@ -211,7 +211,7 @@ update msg model =
         FullRender ->
             let
                 editRecord =
-                    MiniLatex.Edit.init model.seed (prependMacros model.macroText model.sourceText)
+                    MiniLatex.Edit.init True model.seed (prependMacros model.macroText model.sourceText)
             in
             ( { model
                 | counter = model.counter + 1
@@ -224,7 +224,7 @@ update msg model =
         RestoreText ->
             let
                 editRecord =
-                    MiniLatex.Edit.init model.seed (prependMacros initialMacroText initialText)
+                    MiniLatex.Edit.init True model.seed (prependMacros initialMacroText initialText)
             in
             ( { model
                 | counter = model.counter + 1
@@ -238,7 +238,7 @@ update msg model =
         ExampleText ->
             let
                 editRecord =
-                    MiniLatex.Edit.init model.seed (prependMacros initialMacroText StringsV1.mathExampleText)
+                    MiniLatex.Edit.init True model.seed (prependMacros initialMacroText StringsV1.mathExampleText)
             in
             ( { model
                 | counter = model.counter + 1
@@ -287,13 +287,13 @@ render_ str =
     Task.perform Render (Task.succeed str)
 
 
-render : String -> Html msg
-render sourceText =
+render : Bool -> String -> Html msg
+render delay sourceText =
     let
         macroDefinitions =
             initialMacroText
     in
-    MiniLatex.render macroDefinitions sourceText
+    MiniLatex.render delay macroDefinitions sourceText
 
 
 
