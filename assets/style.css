@@ -125,3 +125,10 @@ p.mm-table-cell {
 .mm-verbatim {
 	font: 16px courier; background-color: #eee; padding: 8px;
 }
+
+
+.input-range-labels-container { visibility: hidden }
+
+.input-range-container {
+     transform: rotate(-270deg) translateY(-510px) translateX(-84px)
+  }

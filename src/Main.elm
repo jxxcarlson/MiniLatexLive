@@ -12,6 +12,10 @@ import StringsV1
 import StringsV2
 import Style exposing (..)
 import Task
+import Buffer exposing (Buffer)
+import Editor exposing (EditorConfig, PEEditorMsg, State)
+import Editor.Config exposing (WrapOption(..))
+import SingleSlider as Slider
 
 
 initialText =
@@ -36,6 +40,8 @@ type alias Model a =
     , debounce : Debounce String
     , counter : Int
     , seed : Int
+    , editorBuffer : Buffer
+    , editorState : State
     }
 
 
@@ -50,6 +56,8 @@ type Msg
     | FullRender
     | RestoreText
     | ExampleText
+    | EditorMsg PEEditorMsg
+    | SliderMsg Slider.Msg
 
 
 debounceConfig : Debounce.Config Msg
@@ -77,9 +85,19 @@ init flags =
             , debounce = Debounce.init
             , counter = 0
             , seed = 0
+            , editorBuffer = Buffer.init "Some text"
+            , editorState = Editor.init config
             }
     in
     ( model, Cmd.none )
+
+
+config =
+    { lines = 30
+    , showInfoPanel = True
+    , wrapParams = { maximumWidth = 65, optimalWidth = 60, stringWidth = String.length }
+    , wrapOption = DontWrap
+    }
 
 
 initialMacroText =
@@ -88,12 +106,33 @@ initialMacroText =
 
 subscriptions : Model (Html msg) -> Sub Msg
 subscriptions model =
-    Sub.none
+    Sub.batch
+        [ Sub.map SliderMsg <|
+            Slider.subscriptions (Editor.slider model.editorState)
+        ]
 
 
 update : Msg -> Model (Html msg) -> ( Model (Html msg), Cmd Msg )
 update msg model =
     case msg of
+        EditorMsg msg_ ->
+            let
+                ( editor_, content, cmd ) =
+                    Editor.update model.editorBuffer msg_ model.editorState
+            in
+            ( { model
+                | editorState = editor_
+                , editorBuffer = content
+              }
+            , Cmd.map EditorMsg cmd
+            )
+
+        SliderMsg sliderMsg ->
+          let
+            (newEditorState, cmd) = Editor.sliderUpdate sliderMsg  model.editorState model.editorBuffer
+          in
+            ( { model | editorState = newEditorState }, cmd  |> Cmd.map SliderMsg )
+
         GetContent str ->
             let
                 ( debounce, cmd ) =
@@ -251,12 +290,27 @@ lhs model =
     div [ HA.class "lhs" ]
         [ h1 [ style "margin-left" "20px" ] [ text "MiniLatex Demo" ]
         , label "Edit or write new LaTeX below. It will be rendered in real time."
-        , editor model
+        , Editor.embedded editorConfig model.editorState model.editorBuffer
         , p [ style "margin-left" "20px", style "font-style" "italic" ]
             [ text "For more information about MiniLaTeX, please go to  "
             , a [ href "https://minilatex.io", target "_blank" ] [ text "minilatex.io" ]
             ]
         ]
+
+
+editorConfig =
+    { editorMsg = EditorMsg
+    , sliderMsg = SliderMsg
+    , editorStyle = editorStyle
+    }
+
+
+editorStyle : List (Html.Attribute msg)
+editorStyle =
+    [ HA.style "background-color" "#dddddd"
+    , HA.style "border" "solid 0.5px"
+    , HA.style "width" "600px"
+    ]
 
 
 display : Model (Html Msg) -> Html Msg
