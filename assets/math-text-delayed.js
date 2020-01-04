@@ -13,7 +13,7 @@ class MathTextDelayed extends HTMLElement {
     this.shadowRoot.innerHTML =
       '<mjx-doc><mjx-head></mjx-head><mjx-body>' + this.innerHTML + '</mjx-body></mjx-doc>';
        setTimeout(() => MathJax.typesetShadow(this.shadowRoot), 1);
-  }
+    }
 }
 
 customElements.define('math-text-delayed', MathTextDelayed)
