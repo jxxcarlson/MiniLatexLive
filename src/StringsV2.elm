@@ -70,7 +70,6 @@ be visible in the
 rendered text.
 \\end{comment}
 
-$$\\boa = \\caA^4$$
 
 \\tableofcontents
 
