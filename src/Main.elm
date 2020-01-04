@@ -97,7 +97,7 @@ editorConfig =
     , sliderMsg = SliderMsg
     , editorStyle = editorStyle
     , width = 600
-    , lines = 30
+    , lines = 31
     , lineHeight = 18.0
     , showInfoPanel = True
     , wrapParams = { maximumWidth = 65, optimalWidth = 60, stringWidth = String.length }
@@ -270,10 +270,6 @@ prependMacros macros_ sourceText =
 
 renderFromEditRecord : Int -> Data (Html msg) -> Html msg
 renderFromEditRecord counter editRecord =
-    let
-        _ =
-            Debug.log "(paragraphs, rendered)" ( List.length editRecord.paragraphs, List.length editRecord.renderedParagraphs )
-    in
     MiniLatex.Edit.get editRecord
         |> List.map (\x -> Html.div [ HA.style "margin-bottom" "0.65em" ] [ x ])
         |> Html.div []

@@ -59,7 +59,7 @@ macroPanelStyle =
 
 
 renderedSourceStyle =
-    textStyle "400px" "610px" "#fff"
+    textStyle "400px" "605px" "#fff"
 
 
 textStyle width height color =
