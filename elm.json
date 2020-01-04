@@ -22,6 +22,7 @@
             "folkertdev/elm-paragraph": "1.0.0",
             "jinjor/elm-debounce": "3.0.0",
             "lovasoa/elm-rolling-list": "1.1.4",
+            "lukewestby/elm-string-interpolate": "1.0.4",
             "mdgriffith/elm-ui": "1.1.5"
         },
         "indirect": {

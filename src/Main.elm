@@ -7,6 +7,7 @@ import Html.Attributes as HA exposing (..)
 import Html.Events exposing (onClick, onInput)
 import MiniLatex
 import MiniLatex.Edit exposing (Data)
+import MiniLatex.Render exposing(MathJaxRenderOption(..))
 import Random
 import StringsV1
 import StringsV2
@@ -75,42 +76,37 @@ init : Flags -> ( Model (Html msg), Cmd Msg )
 init flags =
     let
         editRecord =
-            MiniLatex.Edit.init True 0 initialText
+            MiniLatex.Edit.init Delay 0 initialText
 
         model =
             { sourceText = initialText
             , macroText = initialMacroText
-            , renderedText = render True (prependMacros initialMacroText initialText)
+            , renderedText = render Delay (prependMacros initialMacroText initialText)
             , editRecord = editRecord
             , debounce = Debounce.init
             , counter = 0
             , seed = 0
             , editorBuffer = Buffer.init initialText
-            , editorState = Editor.init config
+            , editorState = Editor.init editorConfig
             }
     in
     ( model, Cmd.none )
-
-config =
-    { lines = 30
-    , showInfoPanel = True
-    , wrapParams = { maximumWidth = 55, optimalWidth = 50, stringWidth = String.length }
-    , wrapOption = DontWrap
-    }
-
 
 editorConfig =
     { editorMsg = EditorMsg
     , sliderMsg = SliderMsg
     , editorStyle = editorStyle
+    , width = 600
+    , lines = 30
+    , showInfoPanel = True
+    , wrapParams = { maximumWidth = 65, optimalWidth = 60, stringWidth = String.length }
+    , wrapOption = DontWrap
     }
-
 
 editorStyle : List (Html.Attribute msg)
 editorStyle =
-    [ HA.style "background-color" "#dddddd"
+    [ HA.style "background-color" "#dd0000"
     , HA.style "border" "solid 0.5px"
-    , HA.style "width" "600px"
     ]
 
 initialMacroText =
@@ -178,7 +174,7 @@ update msg model =
                     String.fromInt model.counter
 
                 newEditRecord =
-                    MiniLatex.Edit.update False model.seed (prependMacros model.macroText str) model.editRecord
+                    MiniLatex.Edit.update NoDelay model.seed (prependMacros model.macroText str) model.editRecord
             in
             ( { model
                 | editRecord = newEditRecord
@@ -197,7 +193,7 @@ update msg model =
         Clear ->
             let
                 editRecord =
-                    MiniLatex.Edit.init True 0 ""
+                    MiniLatex.Edit.init Delay 0 ""
             in
             ( { model
                 | sourceText = ""
@@ -211,7 +207,7 @@ update msg model =
         FullRender ->
             let
                 editRecord =
-                    MiniLatex.Edit.init True model.seed (prependMacros model.macroText model.sourceText)
+                    MiniLatex.Edit.init Delay model.seed (prependMacros model.macroText model.sourceText)
             in
             ( { model
                 | counter = model.counter + 1
@@ -224,7 +220,7 @@ update msg model =
         RestoreText ->
             let
                 editRecord =
-                    MiniLatex.Edit.init True model.seed (prependMacros initialMacroText initialText)
+                    MiniLatex.Edit.init Delay model.seed (prependMacros initialMacroText initialText)
             in
             ( { model
                 | counter = model.counter + 1
@@ -238,7 +234,7 @@ update msg model =
         ExampleText ->
             let
                 editRecord =
-                    MiniLatex.Edit.init True model.seed (prependMacros initialMacroText StringsV1.mathExampleText)
+                    MiniLatex.Edit.init Delay model.seed (prependMacros initialMacroText StringsV1.mathExampleText)
             in
             ( { model
                 | counter = model.counter + 1
@@ -287,7 +283,7 @@ render_ str =
     Task.perform Render (Task.succeed str)
 
 
-render : Bool -> String -> Html msg
+render : MathJaxRenderOption -> String -> Html msg
 render delay sourceText =
     let
         macroDefinitions =
