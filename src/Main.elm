@@ -13,8 +13,7 @@ import StringsV1
 import StringsV2
 import Style exposing (..)
 import Task
-import Buffer exposing (Buffer)
-import Editor exposing (EditorConfig, PEEditorMsg, State)
+import Editor exposing (EditorConfig, EditorMsg, Editor)
 import Editor.Config exposing (WrapOption(..))
 import SingleSlider as Slider
 
@@ -41,8 +40,7 @@ type alias Model a =
     , debounce : Debounce String
     , counter : Int
     , seed : Int
-    , editorBuffer : Buffer
-    , editorState : State
+    , editor : Editor
     }
 
 
@@ -57,7 +55,7 @@ type Msg
     | FullRender
     | RestoreText
     | ExampleText
-    | EditorMsg PEEditorMsg
+    | EditorMsg EditorMsg
     | SliderMsg Slider.Msg
 
 
@@ -86,8 +84,7 @@ init flags =
             , debounce = Debounce.init
             , counter = 0
             , seed = 0
-            , editorBuffer = Buffer.init initialText
-            , editorState = Editor.init editorConfig
+            , editor = Editor.init editorConfig initialText
             }
     in
     ( model, Cmd.none )
@@ -118,7 +115,7 @@ subscriptions : Model (Html msg) -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Sub.map SliderMsg <|
-            Slider.subscriptions (Editor.slider model.editorState)
+            Slider.subscriptions (Editor.slider model.editor)
         ]
 
 
@@ -127,18 +124,17 @@ update msg model =
     case msg of
         EditorMsg msg_ ->
             let
-                ( editor_, content, cmd ) =
-                    Editor.update model.editorBuffer msg_ model.editorState
+                ( newEditor, cmd ) =
+                    Editor.update msg_ model.editor
 
-                newSourceText = Buffer.toString content
+                newSourceText = Editor.getSource newEditor
 
                 ( debounce, cmd2 ) =
                             Debounce.push debounceConfig newSourceText model.debounce
 
             in
             ( { model
-                | editorState = editor_
-                , editorBuffer = content
+                | editor = newEditor
                 , sourceText = newSourceText
                 , debounce = debounce
               }
@@ -148,9 +144,9 @@ update msg model =
 
         SliderMsg sliderMsg ->
           let
-            (newEditorState, cmd) = Editor.sliderUpdate sliderMsg  model.editorState model.editorBuffer
+            (newEditor, cmd) = Editor.sliderUpdate sliderMsg  model.editor
           in
-            ( { model | editorState = newEditorState }, cmd  |> Cmd.map SliderMsg )
+            ( { model | editor = newEditor }, cmd  |> Cmd.map SliderMsg )
 
         GetContent str ->
             processNewContent model str
@@ -307,7 +303,7 @@ lhs model =
     div [ HA.class "lhs", style "width" "600px" ]
         [ h1 [ style "margin-left" "20px" ] [ text "MiniLatex Demo" ]
         , label "Edit or write new LaTeX below. It will be rendered in real time."
-        , Editor.embedded editorConfig model.editorState model.editorBuffer
+        , Editor.embedded editorConfig model.editor
         , p [ style "margin-left" "20px", style "font-style" "italic" ]
             [ text "For more information about MiniLaTeX, please go to  "
             , a [ href "https://minilatex.io", target "_blank" ] [ text "minilatex.io" ]
